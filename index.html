@@ -13136,10 +13136,10 @@
 
  // Species data - Liriodendronimage
  const speciesData = [
- { id: 'chinense', name: 'Liriodendron chinense', commonName: 'Liriodendron chinense', englishName: 'Chinese Tulip Tree', distribution: 'southern China and northern Vietnam', conservationStatus: 'Endangered (EN)', genomeSize: '1.75 Gb', chromosomeNumber: '2n = 38', geneCount: '42,831', ncbiTaxId: '3414', color: '#2D5A27', image: '🌳', imageUrl: 'assets/chinese-tulip-tree-flower-profile.jpg', ploidy: 'diploid', description: 'A rare and endangered species native to China and one of the representative species of Liriodendron in Magnoliaceae, known for its distinctive saddle-shaped leaves and tulip-like flowers.' },
- { id: 'tulipifera', name: 'Liriodendron tulipifera', commonName: 'Liriodendron tulipifera', englishName: 'American Tulip Tree', distribution: 'eastern North America', conservationStatus: 'Least Concern (LC)', genomeSize: '~1.8 Gb', chromosomeNumber: '2n = 38', geneCount: '~40,000', ncbiTaxId: '3415', color: '#8B4513', image: '🍂', imageUrl: 'assets/index-embedded-17.png', ploidy: 'diploid', description: 'one of the tallest hardwood tree species in North America, can60high. Flower, of. ' },
- { id: 'hybrid_2x', name: 'Liriodendron × sinoamericanum', commonName: 'Hybrid Liriodendron (diploid)', englishName: 'Hybrid Tulip Tree (Diploid)', distribution: 'cultivated', conservationStatus: 'cultivar', genomeSize: '~1.8 Gb', chromosomeNumber: '2n = 38', geneCount: 'studymedium', ncbiTaxId: '-', color: '#6B8E23', image: '🌱', imageUrl: 'assets/hybrid-tulip-tree-flower-front.jpg', ploidy: 'diploid', description: 'Liriodendron chinenseandLiriodendron tulipifera of hybrid(diploid), parent of, shows clearheterosis, growth, stress resistance. ' },
- { id: 'hybrid_4x', name: 'Liriodendron × sinoamericanum', commonName: 'Hybrid Liriodendron (tetraploid)', englishName: 'Hybrid Tulip Tree (Tetraploid)', distribution: 'cultivated', conservationStatus: 'cultivar', genomeSize: '~3.5 Gb', chromosomeNumber: '4n = 76', geneCount: 'studymedium', ncbiTaxId: '-', color: '#9932CC', image: '🌿', imageUrl: 'assets/hybrid-tulip-tree-flower-leaf.jpg', ploidy: 'tetraploid', description: 'Induction of tetraploidHybrid Liriodendron, more of Leaf, Flowerflowersandmore of Stem,, more of and. ' }
+ { id: 'chinense', name: 'Liriodendron chinense', commonName: 'Liriodendron chinense', englishName: 'Chinese Tulip Tree', distribution: 'southern China and northern Vietnam', conservationStatus: 'Endangered (EN)', genomeSize: '1.75 Gb', chromosomeNumber: '2n = 38', geneCount: '42,831', ncbiTaxId: '3414', color: '#2D5A27', image: '🌳', imageUrl: 'assets/chinese-tulip-tree-flower-profile.jpg', iconUrl: 'assets/liriodendron-chinense-botanical-garden.jpg', ploidy: 'diploid', description: 'A rare and endangered species native to China and one of the representative species of Liriodendron in Magnoliaceae, known for its distinctive saddle-shaped leaves and tulip-like flowers.' },
+ { id: 'tulipifera', name: 'Liriodendron tulipifera', commonName: 'Liriodendron tulipifera', englishName: 'American Tulip Tree', distribution: 'eastern North America', conservationStatus: 'Least Concern (LC)', genomeSize: '~1.8 Gb', chromosomeNumber: '2n = 38', geneCount: '~40,000', ncbiTaxId: '3415', color: '#8B4513', image: '🍂', imageUrl: 'assets/index-embedded-17.png', iconUrl: 'assets/liriodendron-tulipifera-flower-commons.jpg', ploidy: 'diploid', description: 'one of the tallest hardwood tree species in North America, can60high. Flower, of. ' },
+ { id: 'hybrid_2x', name: 'Liriodendron × sinoamericanum', commonName: 'Hybrid Liriodendron (diploid)', englishName: 'Hybrid Tulip Tree (Diploid)', distribution: 'cultivated', conservationStatus: 'cultivar', genomeSize: '~1.8 Gb', chromosomeNumber: '2n = 38', geneCount: 'studymedium', ncbiTaxId: '-', color: '#6B8E23', image: '🌱', imageUrl: 'assets/hybrid-tulip-tree-flower-front.jpg', iconUrl: 'assets/liriodendron-hybrid-leaf-commons.jpg', ploidy: 'diploid', description: 'Liriodendron chinenseandLiriodendron tulipifera of hybrid(diploid), parent of, shows clearheterosis, growth, stress resistance. ' },
+ { id: 'hybrid_4x', name: 'Liriodendron × sinoamericanum', commonName: 'Hybrid Liriodendron (tetraploid)', englishName: 'Hybrid Tulip Tree (Tetraploid)', distribution: 'cultivated', conservationStatus: 'cultivar', genomeSize: '~3.5 Gb', chromosomeNumber: '4n = 76', geneCount: 'studymedium', ncbiTaxId: '-', color: '#9932CC', image: '🌿', imageUrl: 'assets/hybrid-tulip-tree-flower-leaf.jpg', iconUrl: 'assets/liriodendron-hybrid-bud-commons.jpg', ploidy: 'tetraploid', description: 'Induction of tetraploidHybrid Liriodendron, more of Leaf, Flowerflowersandmore of Stem,, more of and. ' }
  ];
 
  // Omics categories
@@ -14297,7 +14297,7 @@ GATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGA`;
  <span className={`px-2.5 py-1 rounded-full text-xs font-medium shimmer backdrop-blur-sm ${species.ploidy === 'tetraploid'? 'bg-purple-500/40 text-purple-200': 'bg-emerald-500/40 text-gray-800'}`}>{species.ploidy}</span>
  </div>
  <div className="absolute bottom-3 left-3">
- <img src={species.imageUrl} alt={`${species.commonName} flower`} className="h-12 w-12 rounded-full border-2 border-white object-cover shadow-lg" />
+ <img src={species.iconUrl} alt={`${species.commonName} botanical photograph`} className="h-12 w-12 rounded-xl border-2 border-white object-cover shadow-lg" />
  </div>
  </div>
  {/* */}
@@ -14476,7 +14476,7 @@ GATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGA`;
  <div key={species.id} className="rounded-2xl bg-white border border-emerald-700/30 overflow-hidden" style={{ borderLeftWidth: '4px', borderLeftColor: species.color }}>
  <div className="p-6">
  <div className="flex items-start gap-4">
- <img src={species.imageUrl} alt={`${species.commonName} flower`} className="h-14 w-14 shrink-0 rounded-xl border border-emerald-700/20 object-cover shadow-sm" />
+ <img src={species.iconUrl} alt={`${species.commonName} botanical photograph`} className="h-14 w-14 shrink-0 rounded-xl border border-emerald-700/20 object-cover shadow-sm" />
  <div className="flex-1">
  <div className="flex items-center gap-3 mb-1 flex-wrap">
  <h2 className="text-xl font-bold text-gray-800 italic font-serif">{species.name}</h2>
