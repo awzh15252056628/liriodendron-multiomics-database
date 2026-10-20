@@ -1,0 +1,72 @@
+# 鹅掌楸基因结构可视化工具 - 嵌入式版本
+
+## 文件说明
+
+本工具包含两个文件：
+
+1. **gene_structure_viewer_embedded.html** (22 KB)
+   - 主HTML文件，包含完整的用户界面和可视化功能
+
+2. **gene_data.js** (24 MB)
+   - 基因组数据文件，包含：
+     - 中国鹅掌楸：35,269 个基因（21,129个有外显子信息）
+     - 北美鹅掌楸：29,655 个基因（全部包含外显子和CDS信息）
+
+## 使用方法
+
+### 方式一：直接打开（推荐）
+1. 确保两个文件在同一目录下
+2. 双击打开 `gene_structure_viewer_embedded.html`
+3. 等待数据加载完成（约2-5秒）
+4. 选择物种，输入基因ID，点击搜索
+
+### 方式二：本地服务器
+如果直接打开遇到问题，可以使用本地服务器：
+
+```bash
+# 在文件所在目录运行
+python -m http.server 8000
+# 或
+python3 -m http.server 8000
+```
+
+然后在浏览器访问：http://localhost:8000/gene_structure_viewer_embedded.html
+
+## 功能特点
+
+✓ 无需上传文件，数据已内置
+✓ 支持两个物种的基因数据
+✓ 快速搜索基因
+✓ 可视化基因结构（外显子、CDS、UTR等）
+✓ 显示详细基因信息
+
+## 示例基因ID
+
+### 中国鹅掌楸
+- Lchi33544
+- Lchi17304
+- Lchi17305
+
+### 北美鹅掌楸
+- Litul.01G000100
+- Litul.01G000200
+
+## 技术说明
+
+- 数据格式：压缩的JSON格式
+- 数据来源：
+  - 中国鹅掌楸：Lchi_chr_all_1.gtf
+  - 北美鹅掌楸：LtulipiferaYP108A_766_v1.1.gene_exons.gff3
+- 数据提取：保留了基因ID、染色体、位置、外显子、CDS、UTR等关键信息
+
+## 注意事项
+
+1. 首次加载需要几秒钟时间加载24MB的数据文件
+2. 建议使用现代浏览器（Chrome、Firefox、Edge等）
+3. 两个文件必须在同一目��下
+4. 如果搜索不到基因，请检查基因ID格式是否正确
+
+## 文件位置
+
+E:\鹅掌楸数据库\gene_structure_viewer_embedded.html
+E:\鹅掌楸数据库\gene_data.js

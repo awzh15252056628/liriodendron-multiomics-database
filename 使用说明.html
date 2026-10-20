@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>鹅掌楸多组学数据库 — 使用说明</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif; background: #f0f9f5; color: #1e293b; line-height: 1.7; }
+        .header { background: linear-gradient(135deg, #064e3b 0%, #065f46 40%, #0d766e 100%); color: white; padding: 48px 40px 36px; text-align: center; position: relative; overflow: hidden; }
+        .header-badge { display: inline-block; background: rgba(52,211,153,0.25); border: 1px solid rgba(52,211,153,0.5); color: #6ee7b7; font-size: 12px; letter-spacing: 2px; padding: 4px 16px; border-radius: 20px; margin-bottom: 16px; text-transform: uppercase; }
+        .header h1 { font-size: 30px; font-weight: 700; margin-bottom: 8px; }
+        .header h1 span { color: #34d399; }
+        .header p { font-size: 15px; opacity: 0.8; }
+        .header-leaf { font-size: 56px; margin-bottom: 12px; display: block; }
+        .container { max-width: 960px; margin: 0 auto; padding: 40px 24px 60px; }
+        .quickstart { background: white; border-radius: 16px; border: 2px solid #34d399; box-shadow: 0 8px 32px rgba(52,211,153,0.15); padding: 32px 36px; margin-bottom: 36px; }
+        .quickstart h2 { font-size: 20px; color: #065f46; margin-bottom: 20px; }
+        .steps { display: flex; flex-direction: column; gap: 16px; }
+        .step { display: flex; align-items: flex-start; gap: 16px; }
+        .step-num { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg,#34d399,#0d9488); color: white; font-weight: 700; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 12px rgba(52,211,153,0.3); }
+        .step-content h3 { font-size: 15px; font-weight: 600; color: #1e293b; margin-bottom: 4px; }
+        .step-content p { font-size: 14px; color: #64748b; }
+        .step-content a { color: #059669; text-decoration: none; font-weight: 500; }
+        .note-box { background: #fffbeb; border: 1px solid #fcd34d; border-radius: 10px; padding: 14px 18px; margin-top: 20px; font-size: 14px; color: #92400e; display: flex; gap: 10px; }
+        .section-title { font-size: 20px; font-weight: 700; color: #065f46; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #d1fae5; display: flex; align-items: center; gap: 10px; }
+        .modules-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 36px; }
+        .module-card { background: white; border-radius: 14px; border: 1px solid #e2e8f0; padding: 22px 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); transition: all 0.25s ease; }
+        .module-card:hover { border-color: #34d399; box-shadow: 0 8px 24px rgba(52,211,153,0.15); transform: translateY(-3px); }
+        .module-icon { font-size: 30px; margin-bottom: 10px; }
+        .module-card h3 { font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 8px; }
+        .module-card p { font-size: 13px; color: #64748b; }
+        .module-tag { display: inline-block; background: #d1fae5; color: #065f46; font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 12px; margin-top: 10px; }
+        .info-block { background: white; border-radius: 14px; border: 1px solid #e2e8f0; padding: 28px 32px; margin-bottom: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+        .req-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+        .req-row:last-child { border-bottom: none; }
+        .req-label { color: #475569; font-weight: 500; }
+        .req-val { font-weight: 600; color: #065f46; }
+        .badge-yes { background: #d1fae5; color: #065f46; padding: 3px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .badge-no { background: #fee2e2; color: #991b1b; padding: 3px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .faq-item { padding: 16px 0; border-bottom: 1px solid #f1f5f9; }
+        .faq-item:last-child { border-bottom: none; }
+        .faq-q { font-weight: 700; color: #1e293b; margin-bottom: 6px; display: flex; gap: 10px; align-items: flex-start; }
+        .faq-q-badge { background: #065f46; color: white; font-size: 11px; font-weight: 700; padding: 1px 8px; border-radius: 6px; flex-shrink: 0; margin-top: 2px; }
+        .faq-a { font-size: 14px; color: #64748b; padding-left: 36px; }
+        .file-tree { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px 24px; font-family: 'Courier New', monospace; font-size: 13px; color: #1e293b; line-height: 2; }
+        .file-tree .dir { color: #065f46; font-weight: 700; }
+        .file-tree .file { color: #475569; }
+        .file-tree .highlight { color: #d97706; font-weight: 700; }
+        .file-tree .comment { color: #94a3b8; font-style: italic; }
+        .footer { text-align: center; padding: 30px; color: #94a3b8; font-size: 13px; border-top: 1px solid #e2e8f0; background: white; }
+        .print-btn { display: flex; justify-content: flex-end; margin-bottom: 24px; }
+        .print-btn button { background: white; border: 1px solid #d1d5db; color: #374151; padding: 8px 20px; border-radius: 8px; font-size: 13px; cursor: pointer; }
+        @media (max-width: 640px) { .modules-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <span class="header-leaf">&#127807;</span>
+    <div class="header-badge">User Manual &middot; 使用说明</div>
+    <h1>鹅掌楸多组学数据库<br><span>Liriodendron Multi-omics Database</span></h1>
+    <p style="margin-top:12px;">LMDB v3.0 &nbsp;&middot;&nbsp; 南京林业大学 &nbsp;&middot;&nbsp; 2026</p>
+</div>
+
+<div class="container">
+
+    <div class="print-btn">
+        <button onclick="window.print()">&#128424; 打印此页面</button>
+    </div>
+
+    <!-- 快速开始 -->
+    <div class="quickstart">
+        <h2>&#128640; 快速开始（首次使用）</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                    <h3>安装 Python（仅首次需要）</h3>
+                    <p>前往 <a href="https://www.python.org/downloads/" target="_blank">python.org/downloads</a> 下载并安装 Python 3.8 或更高版本。安装时必须勾选 <strong>"Add Python to PATH"</strong>。</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                    <h3>将软件文件夹复制到电脑任意位置</h3>
+                    <p>整个 <strong>2026_3_4</strong> 文件夹可放在任意盘符、任意路径，软件使用相对路径，无需修改任何配置。</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                    <h3>双击 <strong>启动.bat</strong> 启动数据库</h3>
+                    <p>脚本将自动检测 Python、启动基因组查询服务器，并在默认浏览器中打开数据库主页。</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">4</div>
+                <div class="step-content">
+                    <h3>在浏览器中正常使用</h3>
+                    <p>推荐使用 <strong>Chrome</strong> 或 <strong>Edge</strong> 浏览器。核心功能无需联网。</p>
+                </div>
+            </div>
+        </div>
+        <div class="note-box">
+            <span>&#9888;&#65039;</span>
+            <div><strong>注意：</strong> 启动.bat 运行后会弹出一个命令行窗口（基因组服务器），<strong>请勿关闭该窗口</strong>，否则基因序列查询功能将停止工作。</div>
+        </div>
+    </div>
+
+    <!-- 功能模块 -->
+    <div class="section-title">&#128230; 功能模块介绍</div>
+    <div class="modules-grid">
+        <div class="module-card">
+            <div class="module-icon">&#129516;</div>
+            <h3>基因组序列查询</h3>
+            <p>根据基因 ID 查询中国/北美鹅掌楸的基因组序列、CDS、蛋白质序列及启动子区域，支持批量下载。</p>
+            <span class="module-tag">需要启动服务器</span>
+        </div>
+        <div class="module-card">
+            <div class="module-icon">&#128202;</div>
+            <h3>基因表达量分析</h3>
+            <p>集成多个转录组数据集（体胚发生、冷胁迫等）的 FPKM 表达量矩阵，支持基因表达可视化与比较。</p>
+            <span class="module-tag">内嵌数据，无需网络</span>
+        </div>
+        <div class="module-card">
+            <div class="module-icon">&#128506;&#65039;</div>
+            <h3>样本地理分布</h3>
+            <p>展示鹅掌楸 NCBI SRA 样本的地理来源信息，支持交互式地图浏览与样本信息检索。</p>
+            <span class="module-tag">地图需联网加载</span>
+        </div>
+        <div class="module-card">
+            <div class="module-icon">&#128279;</div>
+            <h3>比较基因组学</h3>
+            <p>提供中国鹅掌楸与北美鹅掌楸的共线性分析结果，支持染色体级别的基因组比较可视化。</p>
+            <span class="module-tag">独立 HTML 模块</span>
+        </div>
+        <div class="module-card">
+            <div class="module-icon">&#129516;</div>
+            <h3>四倍体剂量效应分析</h3>
+            <p>分析四倍体鹅掌楸中基因剂量效应类别，包含火山图、MA 图、热图等多种可视化方式。</p>
+            <span class="module-tag">独立 HTML 模块</span>
+        </div>
+        <div class="module-card">
+            <div class="module-icon">&#128300;</div>
+            <h3>引物设计工具</h3>
+            <p>支持 qPCR 引物设计、克隆引物设计，根据基因 ID 自动提取 CDS 序列并推荐引物方案。</p>
+            <span class="module-tag">内嵌工具</span>
+        </div>
+        <div class="module-card">
+            <div class="module-icon">&#127797;&#65039;</div>
+            <h3>冷胁迫转录组</h3>
+            <p>包含多个物种冷胁迫条件下的基因表达量数据，支持跨物种基因表达比较分析。</p>
+            <span class="module-tag">内嵌数据</span>
+        </div>
+        <div class="module-card">
+            <div class="module-icon">&#127807;</div>
+            <h3>体胚发生转录组</h3>
+            <p>鹅掌楸体胚发生各阶段的基因表达动态，支持差异表达基因的筛选与模块分析。</p>
+            <span class="module-tag">内嵌数据</span>
+        </div>
+    </div>
+
+    <!-- 系统要求 -->
+    <div class="section-title">&#9881;&#65039; 系统要求</div>
+    <div class="info-block">
+        <div class="req-row"><span class="req-label">操作系统</span><span class="req-val">Windows 10 / 11（64位）</span></div>
+        <div class="req-row"><span class="req-label">Python 版本</span><span class="req-val">3.8 或更高（仅标准库，无需 pip 安装包）</span></div>
+        <div class="req-row"><span class="req-label">浏览器</span><span class="req-val">Chrome / Edge / Firefox（推荐最新版）</span></div>
+        <div class="req-row"><span class="req-label">内存</span><span class="req-val">建议 8 GB 以上</span></div>
+        <div class="req-row"><span class="req-label">磁盘空间</span><span class="req-val">约 3.5 GB（含基因组文件）</span></div>
+        <div class="req-row"><span class="req-label">联网要求</span><span class="req-val">核心功能完全离线；地图/字体首次加载需网络</span></div>
+        <div class="req-row"><span class="req-label">需要安装额外 Python 包？</span><span class="badge-no">不需要</span></div>
+        <div class="req-row"><span class="req-label">需要管理员权限？</span><span class="badge-no">不需要</span></div>
+        <div class="req-row"><span class="req-label">可以放 U 盘使用？</span><span class="badge-yes">可以</span></div>
+    </div>
+
+    <!-- 文件结构 -->
+    <div class="section-title">&#128193; 文件夹结构说明</div>
+    <div class="info-block">
+        <div class="file-tree">
+            <span class="dir">2026_3_4/</span> &nbsp;<span class="comment">&#8592; 软件根目录</span><br>
+            &#9500;&#9472;&#9472; <span class="highlight">启动.bat</span> &nbsp;<span class="comment">&#8592; &#127775; 双击此文件启动软件</span><br>
+            &#9500;&#9472;&#9472; <span class="highlight">3_4.html</span> &nbsp;<span class="comment">&#8592; 数据库主页（主界面）</span><br>
+            &#9500;&#9472;&#9472; <span class="file">genome_server.py</span> &nbsp;<span class="comment">&#8592; 基因组查询服务器（自动启动）</span><br>
+            &#9500;&#9472;&#9472; <span class="file">gene_expression_explorer.html</span> &nbsp;<span class="comment">&#8592; 基因表达量分析</span><br>
+            &#9500;&#9472;&#9472; <span class="file">primer_designer.html</span> &nbsp;<span class="comment">&#8592; 引物设计工具</span><br>
+            &#9500;&#9472;&#9472; <span class="file">tool.html</span> &nbsp;<span class="comment">&#8592; 综合分析工具</span><br>
+            &#9500;&#9472;&#9472; <span class="dir">中国鹅掌楸参考基因组/</span> &nbsp;<span class="comment">&#8592; 基因组文件（勿删除）</span><br>
+            &#9500;&#9472;&#9472; <span class="dir">北美鹅掌楸参考基因组/</span> &nbsp;<span class="comment">&#8592; 基因组文件（勿删除）</span><br>
+            &#9500;&#9472;&#9472; <span class="dir">comparative_genomics/</span> &nbsp;<span class="comment">&#8592; 比较基因组学模块</span><br>
+            &#9492;&#9472;&#9472; <span class="dir">四倍体剂量效应/</span> &nbsp;<span class="comment">&#8592; 剂量效应分析模块</span><br>
+        </div>
+        <p style="font-size:13px;color:#94a3b8;margin-top:12px;">&#9888; 请保持文件夹结构不变，移动时整体移动整个 <strong>2026_3_4</strong> 文件夹。</p>
+    </div>
+
+    <!-- 常见问题 -->
+    <div class="section-title">&#10067; 常见问题</div>
+    <div class="info-block">
+        <div class="faq-item">
+            <div class="faq-q"><span class="faq-q-badge">Q</span>双击启动.bat 提示"未找到 Python"怎么办？</div>
+            <div class="faq-a">请前往 <strong>python.org/downloads</strong> 安装 Python，安装时务必勾选 <strong>"Add Python to PATH"</strong>，安装完成后重新双击 启动.bat。</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q"><span class="faq-q-badge">Q</span>基因序列查询没有结果？</div>
+            <div class="faq-a">请确认 启动.bat 弹出的黑色命令行窗口仍在运行（不要关闭它）。如已关闭，请重新双击 启动.bat。</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q"><span class="faq-q-badge">Q</span>地图无法显示？</div>
+            <div class="faq-a">地图功能需要网络连接加载 Leaflet 地图库。其他所有功能均可完全离线使用。</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q"><span class="faq-q-badge">Q</span>能在多台电脑上同时使用吗？</div>
+            <div class="faq-a">可以。将整个 2026_3_4 文件夹分别复制到每台电脑，各自安装 Python 后即可独立使用。</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q"><span class="faq-q-badge">Q</span>端口 7788 被占用怎么办？</div>
+            <div class="faq-a">说明基因组服务器已在运行中（上次未关闭），直接双击 启动.bat 打开主页即可正常使用。</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q"><span class="faq-q-badge">Q</span>页面字体显示异常？</div>
+            <div class="faq-a">字体从 Google Fonts 在线加载，建议首次在有网络环境下打开一次，浏览器会缓存字体，之后离线也能正常显示。</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q"><span class="faq-q-badge">Q</span>可以放在 U 盘上使用吗？</div>
+            <div class="faq-a">可以，但 U 盘读写较慢可能影响基因组查询性能。建议复制到本地硬盘后使用，体验更流畅。</div>
+        </div>
+    </div>
+
+    <!-- 联系 -->
+    <div class="section-title">&#128236; 联系与引用</div>
+    <div class="info-block">
+        <p style="font-size:14px;color:#475569;line-height:2.2;">
+            <strong>开发单位：</strong> 南京林业大学<br>
+            <strong>数据库版本：</strong> LMDB v3.0（2026年3月）<br>
+            <strong>涵盖物种：</strong> <em>Liriodendron chinense</em>（中国鹅掌楸）和 <em>Liriodendron tulipifera</em>（北美鹅掌楸）<br>
+            <strong>数据来源：</strong> NCBI SRA、参考基因组注释文件及课题组实验数据
+        </p>
+        <div class="note-box" style="margin-top:16px;">
+            <span>&#128161;</span>
+            <div>如在学术论文中使用本数据库，请引用相关文献。如有问题或建议，请联系课题组。</div>
+        </div>
+    </div>
+
+</div>
+
+<div class="footer">
+    <p>&#127807; <strong style="color:#059669;">鹅掌楸多组学数据库 LMDB v3.0</strong> &nbsp;&middot;&nbsp; 南京林业大学 &nbsp;&middot;&nbsp; 2026</p>
+    <p style="margin-top:6px;">双击 <strong style="color:#059669;">启动.bat</strong> 开始使用数据库</p>
+</div>
+
+</body>
+</html>

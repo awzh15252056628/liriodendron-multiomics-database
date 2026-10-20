@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>鹅掌楸基因结构可视化工具 - 嵌入式版本</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .controls {
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .species-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .species-btn {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #dee2e6;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+            font-weight: 600;
+        }
+
+        .species-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .species-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-box button {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .search-box button:hover {
+            transform: scale(1.05);
+        }
+
+        .data-status {
+            margin-top: 15px;
+            padding: 15px;
+            background: #d4edda;
+            border: 2px solid #c3e6cb;
+            border-radius: 10px;
+            text-align: center;
+            color: #155724;
+            font-weight: 600;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .gene-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .gene-info h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-item label {
+            font-weight: 600;
+            color: #6c757d;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .info-item value {
+            color: #212529;
+            font-size: 1.1em;
+        }
+
+        .visualization {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            margin-bottom: 30px;
+        }
+
+        .visualization h3 {
+            margin-bottom: 20px;
+            color: #495057;
+        }
+
+        #geneCanvas {
+            width: 100%;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 20px;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #f5c6cb;
+            margin-bottom: 20px;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #c3e6cb;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+            font-size: 1.2em;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-badge {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            border: 2px solid #e9ecef;
+        }
+
+        .stat-badge strong {
+            color: #667eea;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e9ecef;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌳 鹅掌楸基因结构可视化工具</h1>
+            <p>Liriodendron Gene Structure Viewer - 嵌入式版本</p>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label>选择物种 / Select Species</label>
+                <div class="species-selector">
+                    <button class="species-btn active" data-species="lchi">
+                        中国鹅掌楸<br><small>Liriodendron chinense</small>
+                    </button>
+                    <button class="species-btn" data-species="ltul">
+                        北美鹅掌楸<br><small>Liriodendron tulipifera</small>
+                    </button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>输入基因 ID / Enter Gene ID</label>
+                <div class="search-box">
+                    <input type="text" id="geneInput" placeholder="例如: Lchi33544 或 Litul.01G000100">
+                    <button onclick="searchGene()">搜索 Search</button>
+                </div>
+            </div>
+
+            <div class="data-status" id="dataStatus">
+                <div class="loading" id="loadingIndicator">正在加载基因组数据</div>
+                <div id="loadedStatus" style="display: none;">
+                    ✓ 数据已加载: <span id="geneCount">0</span> 个基因
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div id="messageArea"></div>
+            <div id="resultArea" style="display: none;">
+                <div class="gene-info">
+                    <h2 id="geneTitle">基因信息</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>基因 ID</label>
+                            <value id="geneId">-</value>
+                        </div>
+                        <div class="info-item">
+                            <label>染色体/支架</label>
+                            <value id="chromosome">-</value>
+                        </div>
+                        <div class="info-item">
+                            <label>起始位置</label>
+                            <value id="startPos">-</value>
+                        </div>
+                        <div class="info-item">
+                            <label>终止位置</label>
+                            <value id="endPos">-</value>
+                        </div>
+                        <div class="info-item">
+                            <label>链方向</label>
+                            <value id="strand">-</value>
+                        </div>
+                        <div class="info-item">
+                            <label>基因长度</label>
+                            <value id="geneLength">-</value>
+                        </div>
+                    </div>
+                    <div class="stats">
+                        <div class="stat-badge">
+                            外显子数量: <strong id="exonCount">0</strong>
+                        </div>
+                        <div class="stat-badge">
+                            CDS 数量: <strong id="cdsCount">0</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="visualization">
+                    <h3>基因结构可视化</h3>
+                    <canvas id="geneCanvas" height="400"></canvas>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #4CAF50;"></div>
+                            <span>外显子 (Exon)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #2196F3;"></div>
+                            <span>CDS (编码序列)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #FF9800;"></div>
+                            <span>5' UTR</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #F44336;"></div>
+                            <span>3' UTR</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #9E9E9E;"></div>
+                            <span>内含子 (Intron)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="gene_data.js"></script>
+    <script>
+        let currentSpecies = 'lchi';
+        let allGenes = [];
+        let geneDataLoaded = false;
+
+        // 页面加载时初始化数据
+        window.addEventListener('DOMContentLoaded', function() {
+            loadEmbeddedData();
+        });
+
+        // 加载嵌入的数据
+        function loadEmbeddedData() {
+            try {
+                if (typeof EMBEDDED_GENE_DATA === 'undefined') {
+                    showMessage('错误: 基因数据文件未加载。请确保 gene_data.js 文件存在。', 'error');
+                    document.getElementById('loadingIndicator').textContent = '❌ 数据加载失败';
+                    return;
+                }
+
+                // 转换数据格式
+                const lchiData = EMBEDDED_GENE_DATA.lchi || [];
+                const ltulData = EMBEDDED_GENE_DATA.ltul || [];
+
+                // 转换为完整格式
+                window.geneDatabase = {
+                    lchi: lchiData.map(g => ({
+                        id: g.i,
+                        chromosome: g.c,
+                        start: g.s,
+                        end: g.e,
+                        strand: g.t,
+                        exons: g.x.map(e => ({start: e[0], end: e[1]})),
+                        cds: g.d.map(c => ({start: c[0], end: c[1]})),
+                        utr5: (g.u5 || []).map(u => ({start: u[0], end: u[1]})),
+                        utr3: (g.u3 || []).map(u => ({start: u[0], end: u[1]}))
+                    })),
+                    ltul: ltulData.map(g => ({
+                        id: g.i,
+                        chromosome: g.c,
+                        start: g.s,
+                        end: g.e,
+                        strand: g.t,
+                        exons: g.x.map(e => ({start: e[0], end: e[1]})),
+                        cds: g.d.map(c => ({start: c[0], end: c[1]})),
+                        utr5: (g.u5 || []).map(u => ({start: u[0], end: u[1]})),
+                        utr3: (g.u3 || []).map(u => ({start: u[0], end: u[1]}))
+                    }))
+                };
+
+                allGenes = window.geneDatabase[currentSpecies];
+                geneDataLoaded = true;
+
+                // 更新UI
+                document.getElementById('loadingIndicator').style.display = 'none';
+                document.getElementById('loadedStatus').style.display = 'block';
+                document.getElementById('geneCount').textContent = allGenes.length.toLocaleString();
+
+                console.log(`数据加载成功: 中国鹅掌楸 ${lchiData.length} 个基因, 北美鹅掌楸 ${ltulData.length} 个基因`);
+            } catch (error) {
+                console.error('数据加载错误:', error);
+                showMessage('数据加载失败: ' + error.message, 'error');
+                document.getElementById('loadingIndicator').textContent = '❌ 数据加载失败';
+            }
+        }
+
+        // 物种切换
+        document.querySelectorAll('.species-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.species-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentSpecies = this.dataset.species;
+
+                if (geneDataLoaded && window.geneDatabase) {
+                    allGenes = window.geneDatabase[currentSpecies];
+                    document.getElementById('geneCount').textContent = allGenes.length.toLocaleString();
+                    document.getElementById('resultArea').style.display = 'none';
+                    document.getElementById('messageArea').innerHTML = '';
+                }
+            });
+        });
+
+        // 显示消息
+        function showMessage(message, type = 'info') {
+            const messageArea = document.getElementById('messageArea');
+            const className = type === 'error' ? 'error-message' : 'success-message';
+            messageArea.innerHTML = `<div class="${className}">${message}</div>`;
+        }
+
+        // 搜索基因
+        function searchGene() {
+            const geneInput = document.getElementById('geneInput').value.trim();
+
+            if (!geneInput) {
+                showMessage('请输入基因 ID', 'error');
+                return;
+            }
+
+            if (!geneDataLoaded || allGenes.length === 0) {
+                showMessage('数据尚未加载完成，请稍候...', 'error');
+                return;
+            }
+
+            // 搜索基因
+            const gene = allGenes.find(g =>
+                g.id.toLowerCase() === geneInput.toLowerCase() ||
+                g.id.toLowerCase().includes(geneInput.toLowerCase())
+            );
+
+            if (!gene) {
+                showMessage(`未找到基因: ${geneInput}`, 'error');
+                document.getElementById('resultArea').style.display = 'none';
+                return;
+            }
+
+            displayGene(gene);
+        }
+
+        // 显示基因信息
+        function displayGene(gene) {
+            document.getElementById('messageArea').innerHTML = '';
+            document.getElementById('resultArea').style.display = 'block';
+
+            // 更新基因信息
+            document.getElementById('geneTitle').textContent = `基因信息: ${gene.id}`;
+            document.getElementById('geneId').textContent = gene.id;
+            document.getElementById('chromosome').textContent = gene.chromosome;
+            document.getElementById('startPos').textContent = gene.start.toLocaleString();
+            document.getElementById('endPos').textContent = gene.end.toLocaleString();
+            document.getElementById('strand').textContent = gene.strand === '+' ? '正链 (+)' : '负链 (-)';
+            document.getElementById('geneLength').textContent = (gene.end - gene.start + 1).toLocaleString() + ' bp';
+
+            document.getElementById('exonCount').textContent = gene.exons.length;
+            document.getElementById('cdsCount').textContent = gene.cds.length;
+
+            // 绘制基因结构
+            drawGeneStructure(gene);
+        }
+
+        // 绘制基因结构
+        function drawGeneStructure(gene) {
+            const canvas = document.getElementById('geneCanvas');
+            const ctx = canvas.getContext('2d');
+
+            // 设置画布大小
+            canvas.width = canvas.offsetWidth;
+            const width = canvas.width;
+            const height = 400;
+
+            ctx.clearRect(0, 0, width, height);
+
+            const padding = 50;
+            const drawWidth = width - 2 * padding;
+            const geneLength = gene.end - gene.start;
+            const scale = drawWidth / geneLength;
+
+            // 绘制基因主线
+            const centerY = height / 2;
+            ctx.strokeStyle = '#9E9E9E';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding, centerY);
+            ctx.lineTo(width - padding, centerY);
+            ctx.stroke();
+
+            // 绘制方向箭头
+            const arrowSize = 10;
+            if (gene.strand === '+') {
+                ctx.beginPath();
+                ctx.moveTo(width - padding, centerY);
+                ctx.lineTo(width - padding - arrowSize, centerY - arrowSize);
+                ctx.lineTo(width - padding - arrowSize, centerY + arrowSize);
+                ctx.closePath();
+                ctx.fillStyle = '#9E9E9E';
+                ctx.fill();
+            } else {
+                ctx.beginPath();
+                ctx.moveTo(padding, centerY);
+                ctx.lineTo(padding + arrowSize, centerY - arrowSize);
+                ctx.lineTo(padding + arrowSize, centerY + arrowSize);
+                ctx.closePath();
+                ctx.fillStyle = '#9E9E9E';
+                ctx.fill();
+            }
+
+            // 绘制外显子
+            gene.exons.forEach(exon => {
+                const x = padding + (exon.start - gene.start) * scale;
+                const exonWidth = (exon.end - exon.start) * scale;
+
+                ctx.fillStyle = '#4CAF50';
+                ctx.fillRect(x, centerY - 15, exonWidth, 30);
+                ctx.strokeStyle = '#2E7D32';
+                ctx.strokeRect(x, centerY - 15, exonWidth, 30);
+            });
+
+            // 绘制 CDS
+            gene.cds.forEach(cds => {
+                const x = padding + (cds.start - gene.start) * scale;
+                const cdsWidth = (cds.end - cds.start) * scale;
+
+                ctx.fillStyle = '#2196F3';
+                ctx.fillRect(x, centerY - 20, cdsWidth, 40);
+                ctx.strokeStyle = '#1565C0';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x, centerY - 20, cdsWidth, 40);
+            });
+
+            // 绘制 5' UTR
+            if (gene.utr5) {
+                gene.utr5.forEach(utr => {
+                    const x = padding + (utr.start - gene.start) * scale;
+                    const utrWidth = (utr.end - utr.start) * scale;
+
+                    ctx.fillStyle = '#FF9800';
+                    ctx.fillRect(x, centerY - 10, utrWidth, 20);
+                });
+            }
+
+            // 绘制 3' UTR
+            if (gene.utr3) {
+                gene.utr3.forEach(utr => {
+                    const x = padding + (utr.start - gene.start) * scale;
+                    const utrWidth = (utr.end - utr.start) * scale;
+
+                    ctx.fillStyle = '#F44336';
+                    ctx.fillRect(x, centerY - 10, utrWidth, 20);
+                });
+            }
+
+            // 绘制坐标标尺
+            ctx.fillStyle = '#666';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+
+            const numTicks = 5;
+            for (let i = 0; i <= numTicks; i++) {
+                const pos = gene.start + (geneLength / numTicks) * i;
+                const x = padding + (drawWidth / numTicks) * i;
+
+                ctx.beginPath();
+                ctx.moveTo(x, centerY + 40);
+                ctx.lineTo(x, centerY + 50);
+                ctx.stroke();
+
+                ctx.fillText(Math.round(pos).toLocaleString(), x, centerY + 65);
+            }
+
+            // 绘制标题
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#333';
+            ctx.fillText(`${gene.id} (${gene.chromosome}: ${gene.start.toLocaleString()} - ${gene.end.toLocaleString()})`, padding, 30);
+        }
+
+        // 回车键搜索
+        document.getElementById('geneInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchGene();
+            }
+        });
+    </script>
+</body>
+</html>

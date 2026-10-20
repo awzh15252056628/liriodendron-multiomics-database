@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Liriodendron chinense CRISPR Gene Knockout Primer Design</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #0a0f0d;
+  --bg-secondary: #111a16;
+  --bg-card: #15211b;
+  --bg-input: #0d1612;
+  --accent-green: #2ecc71;
+  --accent-emerald: #00d4aa;
+  --accent-lime: #a8e06c;
+  --accent-teal: #1abc9c;
+  --text-primary: #e8f0ec;
+  --text-secondary: #8fa89a;
+  --text-muted: #5a7568;
+  --border: #1e3328;
+  --border-focus: #2ecc71;
+  --danger: #e74c3c;
+  --warning: #f39c12;
+  --success: #2ecc71;
+  --seq-a: #5dade2;
+  --seq-t: #e74c3c;
+  --seq-g: #f1c40f;
+  --seq-c: #2ecc71;
+  --pam: #e74c3c;
+  --sgrna: #00d4aa;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Background texture */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(46,204,113,0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(0,212,170,0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(168,224,108,0.02) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 48px;
+  animation: fadeInDown 0.8s ease;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.header-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  display: inline-block;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.4rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent-green), var(--accent-emerald), var(--accent-lime));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.header .subtitle {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  font-weight: 300;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.header .latin {
+  font-style: italic;
+  color: var(--accent-emerald);
+  font-weight: 400;
+}
+
+/* Panels */
+.panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 24px;
+  animation: fadeIn 0.6s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-emerald), transparent);
+  opacity: 0.6;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.panel-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent-emerald);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.panel-title .icon {
+  font-size: 1.3rem;
+}
+
+/* Form elements */
+label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+
+textarea {
+  width: 100%;
+  min-height: 180px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  resize: vertical;
+  transition: border-color 0.3s;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(46,204,113,0.1);
+}
+
+textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+select, input[type="number"] {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--text-primary);
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 0.85rem;
+  transition: border-color 0.3s;
+}
+
+select:focus, input[type="number"]:focus {
+  outline: none;
+  border-color: var(--border-focus);
+}
+
+/* Buttons */
+.btn-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-green), var(--accent-emerald));
+  color: #000;
+  box-shadow: 0 4px 20px rgba(46,204,113,0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 28px rgba(46,204,113,0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent-emerald);
+  color: var(--accent-emerald);
+}
+
+.btn-example {
+  background: transparent;
+  color: var(--accent-lime);
+  border: 1px dashed var(--accent-lime);
+  font-size: 0.8rem;
+  padding: 8px 16px;
+}
+
+.btn-example:hover {
+  background: rgba(168,224,108,0.1);
+}
+
+/* Results */
+#results {
+  display: none;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.stat-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--accent-emerald);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* sgRNA table */
+.sgrna-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 12px;
+}
+
+.sgrna-table th {
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+}
+
+.sgrna-table th:first-child { border-radius: 8px 0 0 0; }
+.sgrna-table th:last-child { border-radius: 0 8px 0 0; }
+
+.sgrna-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+  vertical-align: middle;
+}
+
+.sgrna-table tr:hover td {
+  background: rgba(0,212,170,0.04);
+}
+
+.seq-mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+
+.pam-highlight {
+  color: var(--pam);
+  font-weight: 600;
+}
+
+.sgrna-highlight {
+  color: var(--sgrna);
+}
+
+/* Score bars */
+.score-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.score-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-primary);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.score-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+
+.score-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  min-width: 36px;
+  text-align: right;
+}
+
+.score-high { background: var(--success); }
+.score-mid { background: var(--warning); }
+.score-low { background: var(--danger); }
+
+/* Strand badge */
+.strand-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.strand-plus { background: rgba(46,204,113,0.15); color: var(--accent-green); }
+.strand-minus { background: rgba(231,76,60,0.15); color: var(--danger); }
+
+/* GC badge */
+.gc-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.gc-good { background: rgba(46,204,113,0.15); color: var(--success); }
+.gc-ok { background: rgba(243,156,18,0.15); color: var(--warning); }
+.gc-bad { background: rgba(231,76,60,0.15); color: var(--danger); }
+
+/* Primer section */
+.primer-card {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.primer-card:hover {
+  border-color: var(--accent-emerald);
+}
+
+.primer-card.expanded {
+  border-color: var(--accent-emerald);
+}
+
+.primer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.primer-rank {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--accent-lime);
+  background: rgba(168,224,108,0.1);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.primer-details {
+  display: none;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.primer-card.expanded .primer-details {
+  display: block;
+}
+
+.primer-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.primer-item {
+  background: var(--bg-card);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.primer-item h4 {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.primer-seq {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--accent-emerald);
+  word-break: break-all;
+  line-height: 1.5;
+  user-select: all;
+}
+
+.primer-meta {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.primer-meta span {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.primer-meta span b {
+  color: var(--text-secondary);
+}
+
+/* Copy button */
+.copy-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-family: 'Noto Sans SC', sans-serif;
+  transition: all 0.2s;
+}
+
+.copy-btn:hover {
+  border-color: var(--accent-emerald);
+  color: var(--accent-emerald);
+}
+
+.copy-btn.copied {
+  background: rgba(46,204,113,0.15);
+  color: var(--success);
+  border-color: var(--success);
+}
+
+/* Sequence viewer */
+.seq-viewer {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  line-height: 1.8;
+  overflow-x: auto;
+  max-height: 300px;
+  overflow-y: auto;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+/* Loading */
+.loading {
+  display: none;
+  text-align: center;
+  padding: 40px;
+}
+
+.loading.active { display: block; }
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent-emerald);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Export buttons */
+.export-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--accent-emerald);
+  color: var(--text-primary);
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  z-index: 100;
+  animation: toastIn 0.3s ease;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Info box */
+.info-box {
+  background: rgba(0,212,170,0.06);
+  border: 1px solid rgba(0,212,170,0.2);
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-top: 16px;
+}
+
+.info-box strong {
+  color: var(--accent-emerald);
+}
+
+/* Tabs */
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  background: var(--bg-input);
+  border-radius: 10px;
+  padding: 4px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 10px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab-btn.active {
+  background: var(--accent-emerald);
+  color: #000;
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header h1 { font-size: 1.6rem; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .form-row { grid-template-columns: 1fr; }
+  .primer-pair { grid-template-columns: 1fr; }
+  .container { padding: 20px 14px; }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.checkbox-row input[type="checkbox"] {
+  accent-color: var(--accent-emerald);
+  width: 16px;
+  height: 16px;
+}
+
+.checkbox-row label {
+  margin: 0;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-icon">🌿</div>
+    <h1>CRISPR Primer Designer</h1>
+    <div class="subtitle"><span class="latin">Liriodendron chinense</span> · 基因敲除引物设计工具</div>
+  </div>
+
+  <!-- Input Panel -->
+  <div class="panel">
+    <div class="panel-title"><span class="icon">🧬</span> 序列输入</div>
+    <label for="seqInput">粘贴 FASTA 格式序列 (支持基因组DNA序列)</label>
+    <textarea id="seqInput" placeholder=">LcGene_001 Liriodendron chinense gene sequence
+ATGGCTGACGATCGATCGATCGTAGCTAGCTAGCTAGCTAG
+GATCGATCGATCGATCGATCGATCGATCGATCGATCGATCG
+ATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGA..."></textarea>
+
+    <div class="form-row">
+      <div>
+        <label for="casType">Cas 蛋白类型</label>
+        <select id="casType">
+          <option value="SpCas9">SpCas9 (NGG PAM)</option>
+          <option value="SaCas9">SaCas9 (NNGRRT PAM)</option>
+          <option value="Cas12a">Cas12a/Cpf1 (TTTV PAM)</option>
+        </select>
+      </div>
+      <div>
+        <label for="sgLen">sgRNA 长度 (nt)</label>
+        <input type="number" id="sgLen" value="20" min="17" max="25">
+      </div>
+      <div>
+        <label for="primerLen">验证引物长度 (nt)</label>
+        <input type="number" id="primerLen" value="20" min="18" max="30">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div>
+        <label for="gcMin">GC含量下限 (%)</label>
+        <input type="number" id="gcMin" value="30" min="0" max="100">
+      </div>
+      <div>
+        <label for="gcMax">GC含量上限 (%)</label>
+        <input type="number" id="gcMax" value="70" min="0" max="100">
+      </div>
+      <div>
+        <label for="maxResults">最大结果数</label>
+        <input type="number" id="maxResults" value="20" min="5" max="50">
+      </div>
+    </div>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="avoidTTTT" checked>
+      <label for="avoidTTTT">过滤含连续4个T的sgRNA (poly-T终止信号)</label>
+    </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="preferG" checked>
+      <label for="preferG">优先选择5'端以G开头的sgRNA (U6启动子偏好)</label>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="runDesign()">
+        <span>⚡</span> 开始设计
+      </button>
+      <button class="btn btn-secondary" onclick="clearAll()">
+        <span>🗑</span> 清空
+      </button>
+      <button class="btn btn-example" onclick="loadExample()">
+        📋 加载示例序列
+      </button>
+    </div>
+
+    <div class="info-box">
+      <strong>使用说明：</strong>输入鹅掌楸基因的DNA序列（FASTA格式），工具将自动识别PAM位点，设计sgRNA靶序列，并生成用于基因敲除验证的PCR引物对。评分系统综合考虑GC含量、自身互补性、poly-T序列及靶位点位置等因素。
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p style="color: var(--text-secondary);">正在分析序列并设计引物...</p>
+  </div>
+
+  <!-- Results -->
+  <div id="results">
+    <!-- Stats -->
+    <div class="stats-grid" id="statsGrid"></div>
+
+    <!-- Tabs -->
+    <div class="panel">
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('sgrna')">🎯 sgRNA 靶位点</button>
+        <button class="tab-btn" onclick="switchTab('primers')">🧪 验证引物</button>
+        <button class="tab-btn" onclick="switchTab('seqview')">🔍 序列视图</button>
+      </div>
+
+      <!-- sgRNA Tab -->
+      <div class="tab-content active" id="tab-sgrna">
+        <div style="overflow-x: auto;">
+          <table class="sgrna-table" id="sgrnaTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>位置</th>
+                <th>链</th>
+                <th>sgRNA 序列 (5'→3')</th>
+                <th>PAM</th>
+                <th>GC%</th>
+                <th>评分</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="sgrnaBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Primers Tab -->
+      <div class="tab-content" id="tab-primers">
+        <div id="primerResults"></div>
+      </div>
+
+      <!-- Sequence View Tab -->
+      <div class="tab-content" id="tab-seqview">
+        <div class="seq-viewer" id="seqViewer"></div>
+      </div>
+
+      <div class="export-row">
+        <button class="btn btn-secondary" onclick="exportCSV()">📥 导出 CSV</button>
+        <button class="btn btn-secondary" onclick="exportAll()">📋 复制全部引物</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========== CORE CRISPR LOGIC ==========
+
+const PAM_PATTERNS = {
+  SpCas9:  { pattern: /(.{20})(.GG)/gi, pam: 'NGG', pamLen: 3, upstream: true, sgLen: 20 },
+  SaCas9:  { pattern: null, pam: 'NNGRRT', pamLen: 6, upstream: true, sgLen: 20 },
+  Cas12a:  { pattern: null, pam: 'TTTV', pamLen: 4, upstream: false, sgLen: 23 },
+};
+
+function parseFasta(text) {
+  const lines = text.trim().split('\n');
+  let name = 'Unnamed';
+  let seq = '';
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith('>')) {
+      name = trimmed.substring(1).trim();
+    } else {
+      seq += trimmed.replace(/[^ATCGatcgNn]/g, '');
+    }
+  }
+  return { name, sequence: seq.toUpperCase() };
+}
+
+function reverseComplement(seq) {
+  const comp = { A: 'T', T: 'A', G: 'C', C: 'G', N: 'N' };
+  return seq.split('').reverse().map(b => comp[b] || 'N').join('');
+}
+
+function gcContent(seq) {
+  const gc = (seq.match(/[GC]/gi) || []).length;
+  return (gc / seq.length) * 100;
+}
+
+function hasSelfComplement(seq) {
+  const rc = reverseComplement(seq);
+  let maxRun = 0, run = 0;
+  for (let i = 0; i < seq.length; i++) {
+    if (seq[i] === rc[i]) { run++; maxRun = Math.max(maxRun, run); }
+    else run = 0;
+  }
+  return maxRun;
+}
+
+function hasPolyT(seq) {
+  return /TTTT/.test(seq);
+}
+
+function matchPAM(base, pamChar) {
+  const codes = {
+    'N': 'ATCG', 'R': 'AG', 'Y': 'CT', 'M': 'AC',
+    'K': 'GT', 'S': 'GC', 'W': 'AT', 'H': 'ACT',
+    'B': 'CGT', 'V': 'ACG', 'D': 'AGT',
+    'A': 'A', 'T': 'T', 'G': 'G', 'C': 'C'
+  };
+  return (codes[pamChar] || '').includes(base);
+}
+
+function findPAMSites(seq, casType, sgLen) {
+  const config = PAM_PATTERNS[casType];
+  const pamSeq = config.pam;
+  const pamLen = pamSeq.length;
+  const sites = [];
+
+  // Forward strand
+  for (let i = 0; i <= seq.length - pamLen; i++) {
+    let match = true;
+    for (let j = 0; j < pamLen; j++) {
+      if (!matchPAM(seq[i + j], pamSeq[j])) { match = false; break; }
+    }
+    if (match) {
+      if (config.upstream) {
+        // PAM is downstream of sgRNA (SpCas9, SaCas9)
+        const sgStart = i - sgLen;
+        if (sgStart >= 0) {
+          sites.push({
+            sgStart, sgEnd: i,
+            pamStart: i, pamEnd: i + pamLen,
+            strand: '+',
+            sgRNA: seq.substring(sgStart, i),
+            pam: seq.substring(i, i + pamLen)
+          });
+        }
+      } else {
+        // PAM is upstream of sgRNA (Cas12a)
+        const sgStart = i + pamLen;
+        const sgEnd = sgStart + sgLen;
+        if (sgEnd <= seq.length) {
+          sites.push({
+            sgStart, sgEnd,
+            pamStart: i, pamEnd: i + pamLen,
+            strand: '+',
+            sgRNA: seq.substring(sgStart, sgEnd),
+            pam: seq.substring(i, i + pamLen)
+          });
+        }
+      }
+    }
+  }
+
+  // Reverse strand
+  const rcSeq = reverseComplement(seq);
+  for (let i = 0; i <= rcSeq.length - pamLen; i++) {
+    let match = true;
+    for (let j = 0; j < pamLen; j++) {
+      if (!matchPAM(rcSeq[i + j], pamSeq[j])) { match = false; break; }
+    }
+    if (match) {
+      if (config.upstream) {
+        const sgStart = i - sgLen;
+        if (sgStart >= 0) {
+          const origPos = seq.length - i;
+          sites.push({
+            sgStart: origPos - sgLen, sgEnd: origPos,
+            pamStart: origPos, pamEnd: origPos + pamLen,
+            strand: '-',
+            sgRNA: rcSeq.substring(sgStart, i),
+            pam: rcSeq.substring(i, i + pamLen),
+            rcPos: i
+          });
+        }
+      } else {
+        const sgStart = i + pamLen;
+        const sgEnd = sgStart + sgLen;
+        if (sgEnd <= rcSeq.length) {
+          const origPos = seq.length - i - pamLen;
+          sites.push({
+            sgStart: origPos - sgLen, sgEnd: origPos,
+            pamStart: origPos, pamEnd: origPos + pamLen,
+            strand: '-',
+            sgRNA: rcSeq.substring(sgStart, sgEnd),
+            pam: rcSeq.substring(i, i + pamLen),
+            rcPos: i
+          });
+        }
+      }
+    }
+  }
+
+  return sites;
+}
+
+function scoreSgRNA(site, seqLen, preferG, avoidTTTT) {
+  let score = 50; // base score
+  const gc = gcContent(site.sgRNA);
+
+  // GC content scoring (optimal 40-60%)
+  if (gc >= 40 && gc <= 60) score += 20;
+  else if (gc >= 30 && gc <= 70) score += 10;
+  else score -= 10;
+
+  // Self-complementarity penalty
+  const selfComp = hasSelfComplement(site.sgRNA);
+  if (selfComp >= 6) score -= 15;
+  else if (selfComp >= 4) score -= 5;
+
+  // Poly-T penalty
+  if (hasPolyT(site.sgRNA)) {
+    score -= 20;
+  }
+
+  // 5' G bonus (U6 promoter preference)
+  if (site.sgRNA[0] === 'G') score += 10;
+  else if (preferG) score -= 5;
+
+  // Position scoring (prefer 5' region of gene for knockout)
+  const relativePos = site.sgStart / seqLen;
+  if (relativePos >= 0.05 && relativePos <= 0.5) score += 10;
+  else if (relativePos < 0.05) score -= 5; // too close to start
+
+  // Avoid start/end
+  if (site.sgStart < 10 || site.sgEnd > seqLen - 10) score -= 15;
+
+  // Last 4 bases of sgRNA: penalize high GC (seed region)
+  const seed = site.sgRNA.slice(-4);
+  const seedGC = gcContent(seed);
+  if (seedGC >= 25 && seedGC <= 75) score += 5;
+
+  // Dinucleotide GG at position 20 (before PAM) is good
+  if (site.sgRNA.slice(-2) === 'GG') score += 3;
+
+  return Math.max(0, Math.min(100, Math.round(score)));
+}
+
+function designPrimers(seq, site, primerLen, pairIndex) {
+  // Design verification primers flanking the cut site
+  // Cut site is ~3bp upstream of PAM for SpCas9
+  const cutSite = site.strand === '+' ? site.sgEnd - 3 : site.sgStart + 3;
+  
+  // Forward primer: 150-300 bp upstream of cut site
+  const fwdEnd = Math.max(primerLen, cutSite - 150);
+  const fwdStart = Math.max(0, fwdEnd - primerLen);
+  let fwdPrimer = seq.substring(fwdStart, fwdStart + primerLen);
+
+  // Reverse primer: 150-300 bp downstream of cut site
+  const revStart = Math.min(seq.length - primerLen, cutSite + 150);
+  let revPrimer = reverseComplement(seq.substring(revStart, revStart + primerLen));
+
+  // Adjust for better Tm if possible
+  const fwdGC = gcContent(fwdPrimer);
+  const revGC = gcContent(revPrimer);
+
+  // Estimate Tm (basic formula)
+  const calcTm = (p) => {
+    if (p.length < 14) return 2 * (p.match(/[AT]/g) || []).length + 4 * (p.match(/[GC]/g) || []).length;
+    return 64.9 + 41 * ((p.match(/[GC]/g) || []).length - 16.4) / p.length;
+  };
+
+  const expectedSize = (revStart + primerLen) - fwdStart;
+
+  return {
+    index: pairIndex,
+    sgRNA: site.sgRNA,
+    sgPos: site.sgStart,
+    forward: {
+      seq: fwdPrimer,
+      start: fwdStart + 1,
+      end: fwdStart + primerLen,
+      gc: gcContent(fwdPrimer).toFixed(1),
+      tm: calcTm(fwdPrimer).toFixed(1),
+      len: fwdPrimer.length
+    },
+    reverse: {
+      seq: revPrimer,
+      start: revStart + 1,
+      end: revStart + primerLen,
+      gc: gcContent(revPrimer).toFixed(1),
+      tm: calcTm(revPrimer).toFixed(1),
+      len: revPrimer.length
+    },
+    productSize: expectedSize,
+    cutSite: cutSite + 1
+  };
+}
+
+// ========== UI LOGIC ==========
+
+let currentResults = null;
+
+function runDesign() {
+  const rawInput = document.getElementById('seqInput').value.trim();
+  if (!rawInput) { showToast('⚠️ 请输入序列'); return; }
+
+  const { name, sequence } = parseFasta(rawInput);
+  if (sequence.length < 50) { showToast('⚠️ 序列太短，请输入至少50bp的序列'); return; }
+
+  const casType = document.getElementById('casType').value;
+  const sgLen = parseInt(document.getElementById('sgLen').value);
+  const primerLen = parseInt(document.getElementById('primerLen').value);
+  const gcMin = parseInt(document.getElementById('gcMin').value);
+  const gcMax = parseInt(document.getElementById('gcMax').value);
+  const maxResults = parseInt(document.getElementById('maxResults').value);
+  const avoidTTTT = document.getElementById('avoidTTTT').checked;
+  const preferG = document.getElementById('preferG').checked;
+
+  // Show loading
+  document.getElementById('loading').classList.add('active');
+  document.getElementById('results').style.display = 'none';
+
+  setTimeout(() => {
+    // Find PAM sites
+    let sites = findPAMSites(sequence, casType, sgLen);
+
+    // Filter
+    sites = sites.filter(s => {
+      const gc = gcContent(s.sgRNA);
+      if (gc < gcMin || gc > gcMax) return false;
+      if (avoidTTTT && hasPolyT(s.sgRNA)) return false;
+      return true;
+    });
+
+    // Score and sort
+    sites.forEach(s => { s.score = scoreSgRNA(s, sequence.length, preferG, avoidTTTT); });
+    sites.sort((a, b) => b.score - a.score);
+    sites = sites.slice(0, maxResults);
+
+    // Design primers
+    const primers = sites.map((s, i) => designPrimers(sequence, s, primerLen, i + 1));
+
+    currentResults = { name, sequence, casType, sites, primers };
+
+    // Render
+    renderStats(sequence, sites);
+    renderSgRNATable(sites);
+    renderPrimers(primers);
+    renderSeqView(sequence, sites);
+
+    document.getElementById('loading').classList.remove('active');
+    document.getElementById('results').style.display = 'block';
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+  }, 600);
+}
+
+function renderStats(seq, sites) {
+  const totalPAM = sites.length;
+  const avgGC = sites.length > 0 ? (sites.reduce((a, s) => a + gcContent(s.sgRNA), 0) / sites.length).toFixed(1) : 0;
+  const avgScore = sites.length > 0 ? (sites.reduce((a, s) => a + s.score, 0) / sites.length).toFixed(0) : 0;
+
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-value">${seq.length.toLocaleString()}</div>
+      <div class="stat-label">序列长度 (bp)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${totalPAM}</div>
+      <div class="stat-label">候选靶位点</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${avgGC}%</div>
+      <div class="stat-label">平均 GC 含量</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${avgScore}</div>
+      <div class="stat-label">平均评分</div>
+    </div>
+  `;
+}
+
+function renderSgRNATable(sites) {
+  const tbody = document.getElementById('sgrnaBody');
+  tbody.innerHTML = sites.map((s, i) => {
+    const gc = gcContent(s.sgRNA).toFixed(1);
+    const gcClass = gc >= 40 && gc <= 60 ? 'gc-good' : (gc >= 30 && gc <= 70 ? 'gc-ok' : 'gc-bad');
+    const scoreClass = s.score >= 70 ? 'score-high' : (s.score >= 50 ? 'score-mid' : 'score-low');
+    const strandClass = s.strand === '+' ? 'strand-plus' : 'strand-minus';
+
+    return `<tr>
+      <td style="color:var(--text-muted)">${i + 1}</td>
+      <td><span class="seq-mono">${s.sgStart + 1}–${s.sgEnd}</span></td>
+      <td><span class="strand-badge ${strandClass}">${s.strand === '+' ? '+ 正链' : '− 负链'}</span></td>
+      <td><span class="seq-mono sgrna-highlight">${s.sgRNA}</span></td>
+      <td><span class="seq-mono pam-highlight">${s.pam}</span></td>
+      <td><span class="gc-badge ${gcClass}">${gc}%</span></td>
+      <td>
+        <div class="score-bar-wrap">
+          <div class="score-bar"><div class="score-bar-fill ${scoreClass}" style="width:${s.score}%"></div></div>
+          <span class="score-val" style="color:var(--${scoreClass === 'score-high' ? 'success' : scoreClass === 'score-mid' ? 'warning' : 'danger'})">${s.score}</span>
+        </div>
+      </td>
+      <td><button class="copy-btn" onclick="copyText('${s.sgRNA}', this)">复制</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderPrimers(primers) {
+  const container = document.getElementById('primerResults');
+  container.innerHTML = primers.map(p => `
+    <div class="primer-card" onclick="togglePrimer(this)">
+      <div class="primer-header">
+        <div>
+          <span class="primer-rank">靶点 #${p.index}</span>
+          <span style="margin-left:12px;font-size:0.82rem;color:var(--text-secondary)">
+            sgRNA位置: ${p.sgPos + 1} | 切割位点: ${p.cutSite} | 产物: ${p.productSize} bp
+          </span>
+        </div>
+        <span style="color:var(--text-muted);font-size:0.8rem">▼ 展开</span>
+      </div>
+      <div class="primer-details">
+        <div class="primer-pair">
+          <div class="primer-item">
+            <h4>Forward Primer (上游引物)</h4>
+            <div class="primer-seq">${p.forward.seq}</div>
+            <div class="primer-meta">
+              <span>长度: <b>${p.forward.len} nt</b></span>
+              <span>GC: <b>${p.forward.gc}%</b></span>
+              <span>Tm: <b>${p.forward.tm}°C</b></span>
+              <span>位置: <b>${p.forward.start}–${p.forward.end}</b></span>
+            </div>
+          </div>
+          <div class="primer-item">
+            <h4>Reverse Primer (下游引物)</h4>
+            <div class="primer-seq">${p.reverse.seq}</div>
+            <div class="primer-meta">
+              <span>长度: <b>${p.reverse.len} nt</b></span>
+              <span>GC: <b>${p.reverse.gc}%</b></span>
+              <span>Tm: <b>${p.reverse.tm}°C</b></span>
+              <span>位置: <b>${p.reverse.start}–${p.reverse.end}</b></span>
+            </div>
+          </div>
+        </div>
+        <div class="primer-item" style="background:var(--bg-input)">
+          <h4>sgRNA 靶序列</h4>
+          <div class="primer-seq">${p.sgRNA}</div>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button class="copy-btn" onclick="event.stopPropagation();copyPrimerPair(${p.index - 1})">📋 复制引物对</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderSeqView(seq, sites) {
+  const viewer = document.getElementById('seqViewer');
+  // Mark PAM and sgRNA sites on the sequence
+  let marks = [];
+  sites.forEach((s, i) => {
+    if (s.strand === '+') {
+      marks.push({ start: s.sgStart, end: s.sgEnd, type: 'sgrna', idx: i + 1 });
+      marks.push({ start: s.pamStart, end: s.pamEnd, type: 'pam', idx: i + 1 });
+    }
+  });
+
+  // Build HTML - show position numbered sequence
+  let html = '';
+  const lineLen = 60;
+  for (let i = 0; i < seq.length; i += lineLen) {
+    const lineNum = String(i + 1).padStart(6, ' ');
+    const chunk = seq.substring(i, Math.min(i + lineLen, seq.length));
+    let coloredChunk = '';
+
+    for (let j = 0; j < chunk.length; j++) {
+      const pos = i + j;
+      let inSg = false, inPam = false;
+      for (const m of marks) {
+        if (pos >= m.start && pos < m.end) {
+          if (m.type === 'sgrna') inSg = true;
+          if (m.type === 'pam') inPam = true;
+        }
+      }
+      const base = chunk[j];
+      if (inPam) {
+        coloredChunk += `<span style="color:var(--pam);font-weight:700;text-decoration:underline">${base}</span>`;
+      } else if (inSg) {
+        coloredChunk += `<span style="color:var(--sgrna);font-weight:600">${base}</span>`;
+      } else {
+        const cls = base === 'A' ? 'seq-a' : base === 'T' ? 'seq-t' : base === 'G' ? 'seq-g' : 'seq-c';
+        coloredChunk += `<span style="color:var(--${cls})">${base}</span>`;
+      }
+
+      if ((j + 1) % 10 === 0 && j < chunk.length - 1) coloredChunk += ' ';
+    }
+
+    html += `<span style="color:var(--text-muted)">${lineNum}</span>  ${coloredChunk}\n`;
+  }
+
+  html += `\n<span style="color:var(--text-muted)">图例: </span>` +
+    `<span style="color:var(--sgrna)">■ sgRNA靶序列</span>  ` +
+    `<span style="color:var(--pam);font-weight:700;text-decoration:underline">■ PAM位点</span>`;
+
+  viewer.innerHTML = html;
+}
+
+function togglePrimer(el) {
+  el.classList.toggle('expanded');
+  const hint = el.querySelector('.primer-header span:last-child');
+  hint.textContent = el.classList.contains('expanded') ? '▲ 收起' : '▼ 展开';
+}
+
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + tabId).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function copyText(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.classList.add('copied');
+    btn.textContent = '已复制 ✓';
+    setTimeout(() => { btn.classList.remove('copied'); btn.textContent = '复制'; }, 1500);
+  });
+}
+
+function copyPrimerPair(idx) {
+  if (!currentResults) return;
+  const p = currentResults.primers[idx];
+  const text = `sgRNA靶位点 #${p.index}\nsgRNA: ${p.sgRNA}\nForward: ${p.forward.seq} (Tm=${p.forward.tm}°C, GC=${p.forward.gc}%)\nReverse: ${p.reverse.seq} (Tm=${p.reverse.tm}°C, GC=${p.reverse.gc}%)\n产物大小: ${p.productSize} bp`;
+  navigator.clipboard.writeText(text).then(() => showToast('✅ 引物对已复制'));
+}
+
+function exportCSV() {
+  if (!currentResults) return;
+  let csv = 'No,位置,链,sgRNA,PAM,GC%,评分,Forward_Primer,Fwd_Tm,Fwd_GC%,Reverse_Primer,Rev_Tm,Rev_GC%,产物大小bp\n';
+  currentResults.sites.forEach((s, i) => {
+    const p = currentResults.primers[i];
+    csv += `${i + 1},${s.sgStart + 1}-${s.sgEnd},${s.strand},${s.sgRNA},${s.pam},${gcContent(s.sgRNA).toFixed(1)},${s.score},${p.forward.seq},${p.forward.tm},${p.forward.gc},${p.reverse.seq},${p.reverse.tm},${p.reverse.gc},${p.productSize}\n`;
+  });
+
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `CRISPR_Primers_${currentResults.name.replace(/\s+/g, '_')}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('📥 CSV 文件已下载');
+}
+
+function exportAll() {
+  if (!currentResults) return;
+  let text = `=== 鹅掌楸 CRISPR 基因敲除引物设计结果 ===\n`;
+  text += `序列名称: ${currentResults.name}\n`;
+  text += `序列长度: ${currentResults.sequence.length} bp\n`;
+  text += `Cas类型: ${currentResults.casType}\n`;
+  text += `候选靶位点数: ${currentResults.sites.length}\n\n`;
+
+  currentResults.primers.forEach((p, i) => {
+    const s = currentResults.sites[i];
+    text += `--- 靶位点 #${i + 1} (评分: ${s.score}) ---\n`;
+    text += `sgRNA: 5'-${p.sgRNA}-3'\n`;
+    text += `PAM: ${s.pam}\n`;
+    text += `位置: ${s.sgStart + 1}–${s.sgEnd} (${s.strand}链)\n`;
+    text += `Forward: 5'-${p.forward.seq}-3' (Tm=${p.forward.tm}°C, GC=${p.forward.gc}%)\n`;
+    text += `Reverse: 5'-${p.reverse.seq}-3' (Tm=${p.reverse.tm}°C, GC=${p.reverse.gc}%)\n`;
+    text += `预期产物: ${p.productSize} bp\n\n`;
+  });
+
+  navigator.clipboard.writeText(text).then(() => showToast('📋 所有引物信息已复制到剪贴板'));
+}
+
+function clearAll() {
+  document.getElementById('seqInput').value = '';
+  document.getElementById('results').style.display = 'none';
+  currentResults = null;
+}
+
+function loadExample() {
+  // Example: partial CDS-like sequence for demonstration
+  document.getElementById('seqInput').value = `>LcAG Liriodendron chinense AGAMOUS-like gene (示例序列)
+ATGGGTCGTGGTAAGATCAAGATCAAGCGCATCGAGAACAAGATCAACCGTCAGATGAC
+CAACTATCTGAAGGCTTATGAGCTGTCTGTGCTTTGTGATGCTGAGGTGGCCCTTATCATC
+TTCTCCAGCAGCGGTGGCAAGCTGTACGAGTACTGTAACGATCTCTCCGTTATGGAGAAG
+GCTATGGAGAGATTCAAGAAGGCCAAGGATAATGCCATGTATCAAGTATGTGATGCTGAC
+TTGGCTATGTTGGAGAAGGCTTTGGAGAACTCTAACCATCACATGGGCCGGAAGATCAAT
+GAACTCAAGAAGATTCAGAAGAAAGCCTACGAGATGTCAGTTCTTTGCGATGCTCAGGTC
+GCTCTCATCATTTTCTCCACTGCCGGTGGTAAGCTCTATGAATACTGCAGTGATCTGAGT
+GTCATGGAAAAGGCAATGGAGCGTTTTAAGAAGGCTAAGGATAACGCCATGTACCAAGTA
+TGTGATGCAGATCTCGCTATGCTCGAGAAAGCATTGGAGAACTCCAACCACCATATGGGC
+CGTAAGATCAACGAGCTCAAGAAGATTCAGAAAAAGGCTTACGAGATGTCCGTTCTCTGT
+GACGCCCAGGTCGCGCTGATCATCTTCTCCACCGCAGGTGGCAAACTCTACGAGTACTGT
+AGCGACCTGTCGGTGATGGAGAAAGCCATGGAACGATTTAAGAAAGCGAAGGACAATGCT
+ATGTACCAAGTGTGCGACGCCGACCTGGCCATGCTGGAGAAGGCATTGGAAAACTCCAAC
+CACCACATGGGTAGGAAGATCAATGAACTGAAGAAAATCCAGAAGAAAGCCTACGAGTTG
+AGCCGTAAGATCAATGAACTCAAGAAGATTCAGAAAAAGGCTTACGAGATGTCCGTTCTC
+TGTGACGCCCAGGTCGCGCTGATCATCTTCTCCACCGCAGGTTAAGTACTCGGCTGATCC`;
+
+  showToast('📋 已加载鹅掌楸示例序列');
+}
+
+function showToast(msg) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2500);
+}
+</script>
+
+<script>
+(() => {
+  const translations = [
+    ["\u9e45\u638c\u6958 CRISPR \u57fa\u56e0\u6572\u9664\u5f15\u7269\u8bbe\u8ba1", "Liriodendron chinense CRISPR Gene Knockout Primer Design"],
+    ["\u9e45\u638c\u6958 CRISPR \u57fa\u56e0\u6572\u9664\u5f15\u7269\u8bbe\u8ba1\u5de5\u5177", "Liriodendron chinense CRISPR Gene Knockout Primer Design Tool"],
+    ["· \u57fa\u56e0\u6572\u9664\u5f15\u7269\u8bbe\u8ba1\u5de5\u5177", "· Gene knockout primer design tool"],
+    ["\u57fa\u56e0\u6572\u9664\u5f15\u7269\u8bbe\u8ba1\u5de5\u5177", "Gene knockout primer design tool"],
+    ["\u57fa\u56e0\u6572\u9664\u5f15\u7269\u8bbe\u8ba1", "Gene knockout primer design"],
+    ["\u8fc7\u6ee4\u542b\u8fde\u7eed4\u4e2aT\u7684sgRNA (poly-T\u7ec8\u6b62\u4fe1\u53f7)", "Filter sgRNAs with four consecutive Ts (poly-T termination signal)"],
+    ["\u4f18\u5148\u9009\u62e95'\u7aef\u4ee5G\u5f00\u5934\u7684sgRNA (U6\u542f\u52a8\u5b50\u504f\u597d)", "Prefer sgRNAs beginning with G at the 5' end (U6 promoter preference)"],
+    ["\u4f7f\u7528\u8bf4\u660e：\u8f93\u5165\u9e45\u638c\u6958\u57fa\u56e0\u7684DNA\u5e8f\u5217", "Usage: enter the Liriodendron chinense gene DNA sequence"],
+    ["\u5e8f\u5217\u8f93\u5165", "Sequence input"],
+    ["\u7c98\u8d34 FASTA \u683c\u5f0f\u5e8f\u5217 (\u652f\u6301\u57fa\u56e0\u7ec4DNA\u5e8f\u5217)", "Paste a FASTA sequence (genomic DNA sequences supported)"],
+    ["Cas \u86cb\u767d\u7c7b\u578b", "Cas protein type"],
+    ["sgRNA \u957f\u5ea6 (nt)", "sgRNA length (nt)"],
+    ["\u9a8c\u8bc1\u5f15\u7269\u957f\u5ea6 (nt)", "Validation primer length (nt)"],
+    ["GC\u542b\u91cf\u4e0b\u9650 (%)", "Minimum GC content (%)"],
+    ["GC\u542b\u91cf\u4e0a\u9650 (%)", "Maximum GC content (%)"],
+    ["\u6700\u5927\u7ed3\u679c\u6570", "Maximum results"],
+    ["\u5f00\u59cb\u8bbe\u8ba1", "Design primers"],
+    ["\u6e05\u7a7a", "Clear"],
+    ["\u52a0\u8f7d\u793a\u4f8b\u5e8f\u5217", "Load example sequence"],
+    ["\u6b63\u5728\u5206\u6790\u5e8f\u5217\u5e76\u8bbe\u8ba1\u5f15\u7269...", "Analyzing the sequence and designing primers..."],
+    ["sgRNA \u9776\u4f4d\u70b9", "sgRNA target sites"],
+    ["\u9a8c\u8bc1\u5f15\u7269", "Validation primers"],
+    ["\u5e8f\u5217\u89c6\u56fe", "Sequence view"],
+    ["\u4f4d\u7f6e", "Position"],
+    ["\u94fe", "Strand"],
+    ["sgRNA \u5e8f\u5217 (5'→3')", "sgRNA sequence (5'→3')"],
+    ["\u8bc4\u5206", "Score"],
+    ["\u64cd\u4f5c", "Actions"],
+    ["\u5e8f\u5217\u957f\u5ea6 (bp)", "Sequence length (bp)"],
+    ["\u5019\u9009\u9776\u4f4d\u70b9", "Candidate targets"],
+    ["\u5e73\u5747 GC \u542b\u91cf", "Average GC content"],
+    ["\u5e73\u5747\u8bc4\u5206", "Average score"],
+    ["+ \u6b63\u94fe", "+ Forward strand"],
+    ["− \u8d1f\u94fe", "− Reverse strand"],
+    ["\u9776\u70b9 #", "Target #"],
+    ["sgRNA\u4f4d\u7f6e", "sgRNA position"],
+    ["\u5207\u5272\u4f4d\u70b9", "Cut site"],
+    ["\u9884\u671f\u4ea7\u7269", "Expected product"],
+    ["\u4e0a\u6e38\u5f15\u7269", "Forward primer"],
+    ["\u4e0b\u6e38\u5f15\u7269", "Reverse primer"],
+    ["\u4ea7\u7269\u5927\u5c0f", "Product size"],
+    ["\u957f\u5ea6", "Length"],
+    ["\u5e8f\u5217", "Sequence"],
+    ["\u590d\u5236\u5f15\u7269\u5bf9", "Copy primer pair"],
+    ["\u56fe\u4f8b", "Legend"],
+    ["sgRNA\u9776\u5e8f\u5217", "sgRNA target sequence"],
+    ["PAM\u4f4d\u70b9", "PAM site"],
+    ["\u5c55\u5f00", "Expand"],
+    ["\u6536\u8d77", "Collapse"],
+    ["\u5df2\u590d\u5236", "Copied"],
+    ["\u590d\u5236", "Copy"],
+    ["\u8bf7\u8f93\u5165\u5e8f\u5217", "Please enter a sequence"],
+    ["\u5e8f\u5217\u592a\u77ed\uff0c\u8bf7\u8f93\u5165\u81f3\u5c1150bp\u7684\u5e8f\u5217", "Sequence too short; please enter at least 50 bp"],
+    ["\u793a\u4f8b\u5e8f\u5217", "Example sequence"],
+    ["\u5df2\u52a0\u8f7d\u9e45\u638c\u6958\u793a\u4f8b\u5e8f\u5217", "Liriodendron chinense example sequence loaded"],
+    ["\u5bfc\u51fa", "Export"],
+    ["CSV", "CSV"],
+    ["\u8bf7\u8f93\u5165\u6709\u6548\u7684\u5e8f\u5217", "Please enter a valid sequence"],
+    ["\u5e8f\u5217\u540d\u79f0", "Sequence name"],
+    ["\u5019\u9009\u9776\u4f4d\u70b9\u6570", "Number of candidate targets"],
+    ["\u9759\u6001\u5e8f\u5217", "Static sequence"],
+  ].sort((a, b) => b[0].length - a[0].length);
+
+  const translate = value => {
+    let result = String(value ?? '');
+    for (const [source, target] of translations) result = result.split(source).join(target);
+    return result.replace(/[\u3400-\u9fff]/g, '');
+  };
+
+  const translateNode = node => {
+    if (!node) return;
+    if (node.nodeType === Node.TEXT_NODE) {
+      const next = translate(node.nodeValue);
+      if (next !== node.nodeValue) node.nodeValue = next;
+      return;
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE || node.tagName === 'SCRIPT' || node.tagName === 'STYLE') return;
+    for (const name of ['aria-label', 'title', 'placeholder', 'alt']) {
+      if (node.hasAttribute(name)) node.setAttribute(name, translate(node.getAttribute(name)));
+    }
+    node.childNodes.forEach(translateNode);
+  };
+
+  document.documentElement.lang = 'en';
+  document.title = 'Liriodendron chinense CRISPR Gene Knockout Primer Design';
+  translateNode(document.body);
+  new MutationObserver(records => records.forEach(record => {
+    if (record.type === 'attributes' || record.type === 'characterData') translateNode(record.target);
+    else record.addedNodes.forEach(translateNode);
+  })).observe(document.body, {
+    subtree: true,
+    childList: true,
+    characterData: true,
+    attributes: true,
+    attributeFilter: ['aria-label', 'title', 'placeholder', 'alt']
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,30 @@
+.env
+.env.local
+ai-local-key.js
+*.local.js
+
+# Local backups made before the performance edits
+_backup_*/
+
+# Large genomics files. GitHub hard-rejects any file over 100 MB, and once a
+# file has been committed it stays in history even after deletion, so keep the
+# raw references and variant calls out of the repo entirely.
+# The .gz copies that the site actually serves are whitelisted below.
+*.fasta
+*.fa
+*.fna
+*.vcf
+*.bam
+*.sam
+*.gff
+*.gff3
+*.gtf
+*.paf
+
+# Whitelist the compressed copies that are part of the published site.
+!*.fasta.gz
+!*.fa.gz
+!*.vcf.gz
+!*.gff.gz
+!*.gff3.gz
+!*.gtf.gz

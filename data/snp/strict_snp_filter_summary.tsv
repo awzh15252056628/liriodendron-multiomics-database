@@ -1,0 +1,11 @@
+item	value
+input_vcf	/data/hongky_data/HKY/PRJNA773130/NEW/clean/pipeline/vcf/snp_imputed_lchi.vcf.gz
+samples	233
+raw_imputed_candidate_snps	67104478
+strict_rules	biallelic SNP; MAF>=0.05; F_MISSING<=0.05
+strict_snps	42944423
+ld_prune_rule	--indep-pairwise 50 5 0.2
+ld_pruned_snps	8263003
+strict_vcf	/data/hongky_data/HKY/PRJNA773130/NEW/clean/pipeline/vcf/strict_gwas_lchi/snp_strict_maf05_miss05_lchi.vcf.gz
+ld_pruned_vcf	/data/hongky_data/HKY/PRJNA773130/NEW/clean/pipeline/vcf/strict_gwas_lchi/snp_strict_maf05_miss05_lchi_ldpruned.vcf.gz
+run_log	/data/hongky_data/HKY/PRJNA773130/NEW/clean/pipeline/logs/06j_strict_snp_filter_lchi_20260726_102330.log

@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Liriodendron Gene Overexpression Primer Designer</title>
+<style>
+  :root {
+    --bg: #f5f7f3;
+    --card: #ffffff;
+    --primary: #2e7d32;
+    --primary-light: #4caf50;
+    --primary-dark: #1b5e20;
+    --accent: #ff8f00;
+    --text: #263238;
+    --text-light: #546e7a;
+    --border: #c8e6c9;
+    --danger: #c62828;
+    --info: #0277bd;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    --radius: 10px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  header {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 60%, var(--primary-light) 100%);
+    color: white;
+    padding: 28px 24px 22px;
+    text-align: center;
+    box-shadow: 0 3px 16px rgba(0,0,0,0.15);
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 140px; height: 140px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+  }
+
+  header h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  header p {
+    font-size: 0.88rem;
+    opacity: 0.88;
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  .container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 20px 16px 40px;
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 22px 24px;
+    margin-bottom: 18px;
+    border: 1px solid var(--border);
+  }
+
+  .card-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title .icon {
+    width: 22px; height: 22px;
+    background: var(--primary);
+    color: white;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  label {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 5px;
+  }
+
+  label .hint {
+    font-weight: 400;
+    color: var(--text-light);
+    font-size: 0.8rem;
+  }
+
+  textarea, input[type="text"], input[type="number"], select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid #d0d9d0;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    font-family: 'Consolas', 'Courier New', monospace;
+    transition: border-color 0.2s;
+    background: #fafcfa;
+  }
+
+  select {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    cursor: pointer;
+  }
+
+  textarea:focus, input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(46,125,50,0.12);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 140px;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .row-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .form-group {
+    margin-bottom: 14px;
+  }
+
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .checkbox-row input[type="checkbox"] {
+    width: 18px; height: 18px;
+    accent-color: var(--primary);
+    cursor: pointer;
+  }
+
+  .checkbox-row label {
+    margin: 0;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 28px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    box-shadow: 0 3px 12px rgba(46,125,50,0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 18px rgba(46,125,50,0.35);
+  }
+
+  .btn-secondary {
+    background: #e8f5e9;
+    color: var(--primary-dark);
+    border: 1.5px solid var(--border);
+  }
+
+  .btn-secondary:hover {
+    background: #c8e6c9;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  /* Results */
+  #results {
+    display: none;
+  }
+
+  .primer-result {
+    background: #f1f8e9;
+    border: 1.5px solid #aed581;
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+  }
+
+  .primer-result h4 {
+    font-size: 0.95rem;
+    color: var(--primary-dark);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .primer-result h4 .tag {
+    background: var(--primary);
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+
+  .seq-line {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    gap: 8px;
+  }
+
+  .seq-label {
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: var(--text-light);
+    min-width: 90px;
+    padding-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .seq-value {
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.88rem;
+    word-break: break-all;
+    line-height: 1.5;
+    flex: 1;
+  }
+
+  .seq-value .arm {
+    color: var(--info);
+    font-weight: 700;
+  }
+
+  .seq-value .gene {
+    color: var(--danger);
+  }
+
+  .primer-stats {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+    font-size: 0.82rem;
+    color: var(--text-light);
+  }
+
+  .primer-stats span {
+    background: white;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid #d0d9d0;
+  }
+
+  .copy-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 2px 10px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    color: var(--primary);
+    transition: all 0.15s;
+    margin-left: 6px;
+  }
+
+  .copy-btn:hover {
+    background: var(--primary);
+    color: white;
+  }
+
+  .info-box {
+    background: #e3f2fd;
+    border: 1px solid #90caf9;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    color: #0d47a1;
+    margin-bottom: 14px;
+  }
+
+  .warn-box {
+    background: #fff3e0;
+    border: 1px solid #ffcc80;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    color: #e65100;
+    margin-bottom: 14px;
+  }
+
+  .vector-info {
+    font-size: 0.82rem;
+    color: var(--text-light);
+    margin-top: 6px;
+    padding: 8px 12px;
+    background: #f5f5f5;
+    border-radius: 6px;
+    line-height: 1.6;
+  }
+
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    margin-top: 8px;
+  }
+
+  .summary-table th {
+    background: var(--primary);
+    color: white;
+    padding: 8px 12px;
+    text-align: left;
+    font-weight: 600;
+  }
+
+  .summary-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #e0e0e0;
+    font-family: 'Consolas', monospace;
+    font-size: 0.82rem;
+  }
+
+  .summary-table tr:nth-child(even) { background: #f5f8f5; }
+  .summary-table tr:hover { background: #e8f5e9; }
+
+  .export-btns {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+
+  #seqPreview {
+    font-family: 'Consolas', monospace;
+    font-size: 0.82rem;
+    background: #263238;
+    color: #a5d6a7;
+    padding: 14px 16px;
+    border-radius: 8px;
+    max-height: 120px;
+    overflow-y: auto;
+    word-break: break-all;
+    line-height: 1.6;
+    margin-top: 8px;
+    display: none;
+  }
+
+  #seqPreview .start-codon { color: #ffcc02; font-weight: 700; }
+  #seqPreview .stop-codon { color: #ef5350; font-weight: 700; }
+
+  .custom-arms {
+    display: none;
+    margin-top: 10px;
+    padding: 14px;
+    background: #fafafa;
+    border-radius: 8px;
+    border: 1px dashed #c0c0c0;
+  }
+
+  @media (max-width: 640px) {
+    .row, .row-3 { grid-template-columns: 1fr; }
+    header h1 { font-size: 1.3rem; }
+    .container { padding: 12px 10px 30px; }
+    .card { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌿 鹅掌楸基因过表达引物设计工具</h1>
+  <p>Liriodendron chinense — Gene Overexpression Primer Designer</p>
+</header>
+
+<div class="container">
+
+  <!-- Input -->
+  <div class="card">
+    <div class="card-title"><div class="icon">1</div> 输入基因序列</div>
+    <div class="form-group">
+      <label>FASTA 序列 <span class="hint">（粘贴CDS序列，可含FASTA头）</span></label>
+      <textarea id="fastaInput" placeholder=">LcGene1 Liriodendron chinense mRNA
+ATGGCTTCAGCTCTTGAAGATCTTCAGAATGCG..."></textarea>
+    </div>
+    <div id="seqPreview"></div>
+    <div style="display:flex;gap:12px;margin-top:8px;font-size:0.85rem;color:var(--text-light);">
+      <span id="seqLen">序列长度: —</span>
+      <span id="seqGC">GC%: —</span>
+      <span id="seqStart">起始密码子: —</span>
+      <span id="seqStop">终止密码子: —</span>
+    </div>
+  </div>
+
+  <!-- Vector Selection -->
+  <div class="card">
+    <div class="card-title"><div class="icon">2</div> 选择载体</div>
+
+    <div class="form-group">
+      <label>过表达载体</label>
+      <select id="vectorSelect" onchange="onVectorChange()">
+        <option value="pRI101-6xFlag">pRI101-AN-6×Flag（CaMV35S启动子，C端6×Flag标签）</option>
+        <option value="pRI101-GFP">pRI101-AN-GFP（CaMV35S启动子，C端GFP标签）</option>
+        <option value="pCAMBIA1300-35S">pCAMBIA1300-35S（CaMV35S启动子，潮霉素抗性）</option>
+        <option value="pCAMBIA2300-35S">pCAMBIA2300-35S（CaMV35S启动子，卡那霉素抗性）</option>
+        <option value="pBI121">pBI121（CaMV35S启动子，GUS报告基因替换）</option>
+        <option value="pSuper1300-GFP">pSuper1300-GFP（超级启动子，C端GFP标签）</option>
+        <option value="pCAMBIA1305-GFP">pCAMBIA1305-GFP（CaMV35S启动子，C端GFP）</option>
+        <option value="pHB-Flag">pHB-Flag（双CaMV35S启动子，C端Flag标签）</option>
+        <option value="pGreenII62SK">pGreenII 62-SK（CaMV35S启动子，双元载体）</option>
+        <option value="custom">🔧 自定义载体（手动输入同源臂）</option>
+      </select>
+    </div>
+
+    <div id="vectorInfo" class="vector-info"></div>
+
+    <div id="customArms" class="custom-arms">
+      <div class="row">
+        <div class="form-group">
+          <label>自定义载体名称</label>
+          <input type="text" id="customVectorName" placeholder="e.g. pMyVector-GFP">
+        </div>
+        <div class="form-group">
+          <label>克隆方法</label>
+          <select id="customMethod">
+            <option value="infusion">同源重组 (ClonExpress/In-Fusion)</option>
+            <option value="enzyme">限制性酶切连接</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group">
+          <label>正向同源臂 / 酶切位点上游序列 <span class="hint">(5'→3')</span></label>
+          <input type="text" id="customFwdArm" placeholder="e.g. GGATCCCATATG">
+        </div>
+        <div class="form-group">
+          <label>反向同源臂 / 酶切位点下游序列 <span class="hint">(5'→3', 将自动反向互补)</span></label>
+          <input type="text" id="customRevArm" placeholder="e.g. GTCGACTCATGA">
+        </div>
+      </div>
+      <div class="checkbox-row">
+        <input type="checkbox" id="customHasTag">
+        <label for="customHasTag">载体含C端标签（去除终止密码子）</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Parameters -->
+  <div class="card">
+    <div class="card-title"><div class="icon">3</div> 引物设计参数</div>
+
+    <div class="row">
+      <div class="form-group">
+        <label>克隆方法</label>
+        <select id="cloningMethod">
+          <option value="infusion">同源重组克隆 (ClonExpress / In-Fusion)</option>
+          <option value="enzyme">限制性酶切连接</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>同源臂长度 <span class="hint">(同源重组法)</span></label>
+        <select id="armLength">
+          <option value="15">15 bp（标准）</option>
+          <option value="17" selected>17 bp（推荐）</option>
+          <option value="20">20 bp</option>
+          <option value="25">25 bp（高保真）</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row-3">
+      <div class="form-group">
+        <label>基因特异性引物长度</label>
+        <select id="primerLen">
+          <option value="18">18 bp</option>
+          <option value="20" selected>20 bp（推荐）</option>
+          <option value="22">22 bp</option>
+          <option value="24">24 bp</option>
+          <option value="25">25 bp</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>目标 Tm 范围 (°C)</label>
+        <input type="text" id="tmRange" value="58-65" style="font-family:sans-serif;">
+      </div>
+      <div class="form-group">
+        <label>最大引物总长度</label>
+        <input type="number" id="maxLen" value="50" style="font-family:sans-serif;">
+      </div>
+    </div>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="removeStop" checked>
+      <label for="removeStop">去除终止密码子（用于C端融合标签载体，如Flag/GFP/His）</label>
+    </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="addKozak">
+      <label for="addKozak">添加 Kozak 序列优化（在ATG前加CACC）</label>
+    </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="autoOptimize" checked>
+      <label for="autoOptimize">自动优化引物长度以匹配目标Tm</label>
+    </div>
+  </div>
+
+  <!-- Action -->
+  <div class="btn-row" style="justify-content:center;margin-bottom:16px;">
+    <button class="btn btn-primary" onclick="designPrimers()" style="min-width:200px;">🧬 设计引物</button>
+    <button class="btn btn-secondary" onclick="loadExample()">📋 载入示例</button>
+    <button class="btn btn-secondary" onclick="clearAll()">🗑️ 清空</button>
+  </div>
+
+  <!-- Results -->
+  <div id="results">
+    <div class="card">
+      <div class="card-title"><div class="icon">✓</div> 引物设计结果</div>
+      <div id="warnings"></div>
+      <div id="primerResults"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><div class="icon">📊</div> 引物汇总表</div>
+      <div id="summaryTable"></div>
+      <div class="export-btns">
+        <button class="btn btn-secondary" onclick="copyAllPrimers()">📋 复制全部引物</button>
+        <button class="btn btn-secondary" onclick="exportCSV()">📥 导出 CSV</button>
+        <button class="btn btn-secondary" onclick="exportOrder()">🧾 导出订单格式</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ==================== VECTOR DATABASE ====================
+const VECTORS = {
+  'pRI101-6xFlag': {
+    name: 'pRI101-AN-6×Flag',
+    promoter: 'CaMV 35S',
+    tag: 'C端 6×Flag',
+    resistance: '卡那霉素 (Kan)',
+    sites: 'NdeI / SalI',
+    hasTag: true,
+    fwdArm: 'CATTTGGAGAGGACACG',   // upstream of NdeI (CATATG)
+    revArm: 'AACGGGCCCTCTAGACT',   // downstream before 6xFlag, reverse complemented in design
+    enzymeFwd: 'CATATG',  // NdeI
+    enzymeRev: 'GTCGAC',  // SalI
+    note: '适用于农杆菌介导的植物转化，C端融合6×Flag标签，便于Western blot检测。NdeI/SalI双酶切克隆，或同源重组克隆。'
+  },
+  'pRI101-GFP': {
+    name: 'pRI101-AN-GFP',
+    promoter: 'CaMV 35S',
+    tag: 'C端 GFP',
+    resistance: '卡那霉素 (Kan)',
+    sites: 'NdeI / SalI',
+    hasTag: true,
+    fwdArm: 'CATTTGGAGAGGACACG',
+    revArm: 'AACGGGCCCTCTAGACT',
+    enzymeFwd: 'CATATG',
+    enzymeRev: 'GTCGAC',
+    note: '适用于亚细胞定位实验，C端融合GFP标签，可进行荧光观察。'
+  },
+  'pCAMBIA1300-35S': {
+    name: 'pCAMBIA1300-35S',
+    promoter: 'CaMV 35S',
+    tag: '无标签',
+    resistance: '潮霉素 (Hyg) + 卡那霉素 (Kan)',
+    sites: 'BamHI / SalI (KpnI)',
+    hasTag: false,
+    fwdArm: 'GGACTCTTGACCATGGT',
+    revArm: 'GCAGGTCACTGGATTTT',
+    enzymeFwd: 'GGATCC',  // BamHI
+    enzymeRev: 'GTCGAC',  // SalI
+    note: '经典双元载体，潮霉素筛选，广泛用于植物稳定转化。建议保留终止密码子。'
+  },
+  'pCAMBIA2300-35S': {
+    name: 'pCAMBIA2300-35S',
+    promoter: 'CaMV 35S',
+    tag: '无标签',
+    resistance: '卡那霉素 (Kan)',
+    sites: 'BamHI / SacI',
+    hasTag: false,
+    fwdArm: 'GGACTCTTGACCATGGT',
+    revArm: 'GCAGGTCACTGGATTTT',
+    enzymeFwd: 'GGATCC',
+    enzymeRev: 'GAGCTC',
+    note: '卡那霉素筛选的双元载体，适用于对潮霉素敏感的植物。'
+  },
+  'pBI121': {
+    name: 'pBI121',
+    promoter: 'CaMV 35S',
+    tag: '无标签（替换GUS）',
+    resistance: '卡那霉素 (Kan)',
+    sites: 'BamHI / SacI',
+    hasTag: false,
+    fwdArm: 'GGACTCAGATCTCGAGC',
+    revArm: 'CGATCGGGGAAATTCGA',
+    enzymeFwd: 'GGATCC',
+    enzymeRev: 'GAGCTC',
+    note: '经典载体，用目的基因替换GUS报告基因。BamHI/SacI克隆。'
+  },
+  'pSuper1300-GFP': {
+    name: 'pSuper1300-GFP',
+    promoter: 'Super promoter (3×enhancer)',
+    tag: 'C端 GFP',
+    resistance: '潮霉素 (Hyg)',
+    sites: 'KpnI / SalI',
+    hasTag: true,
+    fwdArm: 'ACAAATCTATCTCTCTC',
+    revArm: 'AACGGGCCCTCTAGACT',
+    enzymeFwd: 'GGTACC',
+    enzymeRev: 'GTCGAC',
+    note: '超级启动子驱动，表达量高于CaMV35S。C端GFP标签，适用于亚细胞定位。'
+  },
+  'pCAMBIA1305-GFP': {
+    name: 'pCAMBIA1305-GFP',
+    promoter: 'CaMV 35S',
+    tag: 'C端 GFP',
+    resistance: '潮霉素 (Hyg)',
+    sites: 'NcoI / BglII',
+    hasTag: true,
+    fwdArm: 'GGACTCTTGACCATGGT',
+    revArm: 'GGGCCCTCTAGAGTCGA',
+    enzymeFwd: 'CCATGG',
+    enzymeRev: 'AGATCT',
+    note: '基于pCAMBIA1305改造，C端融合GFP，NcoI（含ATG）/BglII克隆。'
+  },
+  'pHB-Flag': {
+    name: 'pHB-Flag',
+    promoter: '2×CaMV 35S',
+    tag: 'C端 Flag',
+    resistance: '潮霉素 (Hyg)',
+    sites: 'XbaI / SalI',
+    hasTag: true,
+    fwdArm: 'CGACTCTAGAGGATCCC',
+    revArm: 'AACGGGCCCTCTAGACT',
+    enzymeFwd: 'TCTAGA',
+    enzymeRev: 'GTCGAC',
+    note: '双CaMV35S启动子，高表达量。C端Flag标签。潮霉素筛选。'
+  },
+  'pGreenII62SK': {
+    name: 'pGreenII 62-SK',
+    promoter: 'CaMV 35S',
+    tag: '无标签',
+    resistance: '卡那霉素 (Kan)',
+    sites: 'BamHI / EcoRI',
+    hasTag: false,
+    fwdArm: 'GCTCTAATTTGTTTATT',
+    revArm: 'TCGAGCTCGGTACCCGG',
+    enzymeFwd: 'GGATCC',
+    enzymeRev: 'GAATTC',
+    note: '小型双元载体，常用于烟草瞬时表达、双分子荧光互补 (BiFC) 等实验。需配合pSoup辅助质粒。'
+  }
+};
+
+let designedPrimers = [];
+
+// ==================== SEQUENCE UTILITIES ====================
+function parseFasta(text) {
+  text = text.trim();
+  let header = '';
+  let seq = '';
+  const lines = text.split('\n');
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith('>')) {
+      header = trimmed.substring(1).trim();
+    } else {
+      seq += trimmed.replace(/\s+/g, '').toUpperCase();
+    }
+  }
+  // Remove non-ATCG characters
+  seq = seq.replace(/[^ATCGU]/gi, '');
+  seq = seq.replace(/U/g, 'T');
+  return { header, sequence: seq };
+}
+
+function reverseComplement(seq) {
+  const comp = { A: 'T', T: 'A', C: 'G', G: 'C' };
+  return seq.split('').reverse().map(c => comp[c] || c).join('');
+}
+
+function gcContent(seq) {
+  const gc = (seq.match(/[GC]/gi) || []).length;
+  return (gc / seq.length * 100).toFixed(1);
+}
+
+function calcTm(seq) {
+  // Basic nearest-neighbor approximation for oligos
+  seq = seq.toUpperCase();
+  if (seq.length < 14) {
+    // Short oligo formula
+    const gc = (seq.match(/[GC]/g) || []).length;
+    const at = (seq.match(/[AT]/g) || []).length;
+    return 2 * at + 4 * gc;
+  }
+  // Adjusted formula for longer oligos
+  const gc = (seq.match(/[GC]/g) || []).length;
+  return 64.9 + 41 * (gc - 16.4) / seq.length;
+}
+
+function calcTmNN(seq) {
+  // Nearest-neighbor method (SantaLucia 1998)
+  seq = seq.toUpperCase();
+  const dH = {
+    'AA': -7.9, 'AT': -7.2, 'AC': -8.4, 'AG': -7.8,
+    'TA': -7.2, 'TT': -7.9, 'TC': -8.2, 'TG': -8.5,
+    'CA': -8.5, 'CT': -7.8, 'CC': -8.0, 'CG': -10.6,
+    'GA': -8.2, 'GT': -8.4, 'GC': -9.8, 'GG': -8.0
+  };
+  const dS = {
+    'AA': -22.2, 'AT': -20.4, 'AC': -22.4, 'AG': -21.0,
+    'TA': -21.3, 'TT': -22.2, 'TC': -22.2, 'TG': -22.7,
+    'CA': -22.7, 'CT': -21.0, 'CC': -19.9, 'CG': -27.2,
+    'GA': -22.2, 'GT': -22.4, 'GC': -24.4, 'GG': -19.9
+  };
+
+  let totalH = 0, totalS = 0;
+  for (let i = 0; i < seq.length - 1; i++) {
+    const di = seq.substring(i, i + 2);
+    totalH += (dH[di] || -8.0);
+    totalS += (dS[di] || -21.0);
+  }
+  // Initiation
+  totalH += 0.2; totalS += -5.7;
+  // Salt correction (50mM Na+)
+  const saltCorr = 16.6 * Math.log10(0.05);
+  const R = 1.987;
+  const ct = 250e-9; // primer concentration
+  const tm = (totalH * 1000) / (totalS + R * Math.log(ct / 4)) - 273.15 + saltCorr;
+  return tm;
+}
+
+function getStopCodons() {
+  return ['TAA', 'TAG', 'TGA'];
+}
+
+function isStopCodon(codon) {
+  return getStopCodons().includes(codon.toUpperCase());
+}
+
+// ==================== UI FUNCTIONS ====================
+function onVectorChange() {
+  const val = document.getElementById('vectorSelect').value;
+  const infoDiv = document.getElementById('vectorInfo');
+  const customDiv = document.getElementById('customArms');
+  const removeStopCb = document.getElementById('removeStop');
+
+  if (val === 'custom') {
+    customDiv.style.display = 'block';
+    infoDiv.innerHTML = '请手动输入载体信息和同源臂序列。';
+    return;
+  }
+
+  customDiv.style.display = 'none';
+  const v = VECTORS[val];
+  if (!v) return;
+
+  removeStopCb.checked = v.hasTag;
+
+  infoDiv.innerHTML = `
+    <strong>${v.name}</strong><br>
+    启动子: ${v.promoter} &nbsp;|&nbsp; 标签: ${v.tag} &nbsp;|&nbsp; 抗性: ${v.resistance}<br>
+    克隆位点: ${v.sites}<br>
+    ${v.note}
+  `;
+}
+
+document.getElementById('fastaInput').addEventListener('input', function() {
+  const { header, sequence } = parseFasta(this.value);
+  const preview = document.getElementById('seqPreview');
+  const lenSpan = document.getElementById('seqLen');
+  const gcSpan = document.getElementById('seqGC');
+  const startSpan = document.getElementById('seqStart');
+  const stopSpan = document.getElementById('seqStop');
+
+  if (!sequence || sequence.length < 6) {
+    preview.style.display = 'none';
+    lenSpan.textContent = '序列长度: —';
+    gcSpan.textContent = 'GC%: —';
+    startSpan.textContent = '起始密码子: —';
+    stopSpan.textContent = '终止密码子: —';
+    return;
+  }
+
+  lenSpan.textContent = `序列长度: ${sequence.length} bp`;
+  gcSpan.textContent = `GC%: ${gcContent(sequence)}%`;
+
+  const first3 = sequence.substring(0, 3);
+  const last3 = sequence.substring(sequence.length - 3);
+  startSpan.textContent = `起始密码子: ${first3 === 'ATG' ? '✅ ATG' : '⚠️ ' + first3}`;
+  stopSpan.textContent = `终止密码子: ${isStopCodon(last3) ? '✅ ' + last3 : '❌ 无终止子'}`;
+
+  // Preview with colored codons
+  let html = '';
+  const showLen = Math.min(sequence.length, 90);
+  for (let i = 0; i < showLen; i++) {
+    if (i < 3) html += `<span class="start-codon">${sequence[i]}</span>`;
+    else if (i >= sequence.length - 3 && isStopCodon(last3))
+      html += `<span class="stop-codon">${sequence[i]}</span>`;
+    else html += sequence[i];
+  }
+  if (sequence.length > 90) html += `... (${sequence.length} bp total)`;
+  preview.innerHTML = html;
+  preview.style.display = 'block';
+});
+
+// Initialize vector info
+onVectorChange();
+
+// ==================== PRIMER DESIGN ENGINE ====================
+function designPrimers() {
+  const { header, sequence } = parseFasta(document.getElementById('fastaInput').value);
+
+  if (!sequence || sequence.length < 30) {
+    alert('⚠️ 请输入有效的CDS序列（至少30bp）');
+    return;
+  }
+
+  if (sequence.substring(0, 3) !== 'ATG') {
+    if (!confirm('⚠️ 序列不以ATG开头，是否继续？')) return;
+  }
+
+  const vectorKey = document.getElementById('vectorSelect').value;
+  const method = document.getElementById('cloningMethod').value;
+  const armLen = parseInt(document.getElementById('armLength').value);
+  const primerLen = parseInt(document.getElementById('primerLen').value);
+  const removeStop = document.getElementById('removeStop').checked;
+  const addKozak = document.getElementById('addKozak').checked;
+  const autoOpt = document.getElementById('autoOptimize').checked;
+  const tmRange = document.getElementById('tmRange').value.split('-').map(Number);
+  const tmMin = tmRange[0] || 55;
+  const tmMax = tmRange[1] || 65;
+
+  let vectorName, fwdArm, revArm, enzFwd, enzRev, hasTag;
+
+  if (vectorKey === 'custom') {
+    vectorName = document.getElementById('customVectorName').value || 'Custom Vector';
+    fwdArm = document.getElementById('customFwdArm').value.toUpperCase().replace(/\s/g, '');
+    revArm = document.getElementById('customRevArm').value.toUpperCase().replace(/\s/g, '');
+    hasTag = document.getElementById('customHasTag').checked;
+    enzFwd = ''; enzRev = '';
+  } else {
+    const v = VECTORS[vectorKey];
+    vectorName = v.name;
+    hasTag = v.hasTag;
+    enzFwd = v.enzymeFwd;
+    enzRev = v.enzymeRev;
+    if (method === 'infusion') {
+      fwdArm = v.fwdArm.substring(0, armLen);
+      revArm = v.revArm.substring(0, armLen);
+    } else {
+      // Enzyme digestion: add protect bases + enzyme site
+      fwdArm = '';
+      revArm = '';
+    }
+  }
+
+  const shouldRemoveStop = (removeStop && hasTag);
+  const geneName = header ? header.split(/\s+/)[0] : 'Gene';
+
+  // Working sequence
+  let workSeq = sequence;
+  if (shouldRemoveStop) {
+    const last3 = workSeq.substring(workSeq.length - 3);
+    if (isStopCodon(last3)) {
+      workSeq = workSeq.substring(0, workSeq.length - 3);
+    }
+  }
+
+  // Design forward primer
+  let fwdGeneSpecific = workSeq.substring(0, primerLen);
+  if (autoOpt) {
+    fwdGeneSpecific = optimizePrimerLength(workSeq, 0, 'forward', tmMin, tmMax, primerLen);
+  }
+
+  // Design reverse primer
+  let revTarget = workSeq.substring(workSeq.length - primerLen);
+  let revGeneSpecific = reverseComplement(revTarget);
+  if (autoOpt) {
+    revGeneSpecific = optimizePrimerLength(workSeq, workSeq.length, 'reverse', tmMin, tmMax, primerLen);
+  }
+
+  // Construct full primers
+  let fwdFull, revFull, fwdArmDisplay, revArmDisplay;
+
+  if (method === 'infusion') {
+    // Homologous recombination
+    let kozakSeq = addKozak ? 'CACC' : '';
+    fwdArmDisplay = fwdArm + kozakSeq;
+    revArmDisplay = reverseComplement(revArm);
+
+    if (!shouldRemoveStop) {
+      // Keep stop codon, just use rev arm
+      fwdFull = fwdArmDisplay + fwdGeneSpecific;
+      revFull = revArmDisplay + revGeneSpecific;
+    } else {
+      fwdFull = fwdArmDisplay + fwdGeneSpecific;
+      revFull = revArmDisplay + revGeneSpecific;
+    }
+  } else {
+    // Enzyme digestion
+    const protectBases = 'CCGG'; // Protection bases for enzyme cutting
+    let kozakSeq = addKozak ? 'CACC' : '';
+
+    fwdArmDisplay = protectBases + enzFwd + kozakSeq;
+    let revEnzyme = enzRev;
+    if (shouldRemoveStop) {
+      revArmDisplay = protectBases + revEnzyme;
+    } else {
+      revArmDisplay = protectBases + revEnzyme;
+    }
+
+    fwdFull = fwdArmDisplay + fwdGeneSpecific;
+    revFull = revArmDisplay + revGeneSpecific;
+  }
+
+  // Calculate primer properties
+  const fwdTm = calcTmNN(fwdGeneSpecific);
+  const revTm = calcTmNN(revGeneSpecific);
+  const fwdGC = gcContent(fwdGeneSpecific);
+  const revGC = gcContent(revGeneSpecific);
+  const fwdFullTm = calcTmNN(fwdFull);
+  const revFullTm = calcTmNN(revFull);
+
+  designedPrimers = [
+    {
+      name: `${geneName}-OE-F`,
+      fullSeq: fwdFull,
+      arm: fwdArmDisplay,
+      geneSpecific: fwdGeneSpecific,
+      tmGene: fwdTm.toFixed(1),
+      tmFull: fwdFullTm.toFixed(1),
+      gc: fwdGC,
+      len: fwdFull.length,
+      geneLen: fwdGeneSpecific.length,
+      direction: 'Forward'
+    },
+    {
+      name: `${geneName}-OE-R`,
+      fullSeq: revFull,
+      arm: revArmDisplay,
+      geneSpecific: revGeneSpecific,
+      tmGene: revTm.toFixed(1),
+      tmFull: revFullTm.toFixed(1),
+      gc: revGC,
+      len: revFull.length,
+      geneLen: revGeneSpecific.length,
+      direction: 'Reverse'
+    }
+  ];
+
+  // Render results
+  renderResults(designedPrimers, vectorName, method, shouldRemoveStop, workSeq.length);
+}
+
+function optimizePrimerLength(seq, pos, direction, tmMin, tmMax, defaultLen) {
+  let bestPrimer = '';
+  let bestTmDiff = 999;
+
+  for (let len = 18; len <= 30; len++) {
+    let candidate;
+    if (direction === 'forward') {
+      candidate = seq.substring(pos, pos + len);
+    } else {
+      candidate = reverseComplement(seq.substring(seq.length - len));
+    }
+
+    if (candidate.length < len) break;
+
+    const tm = calcTmNN(candidate);
+    const tmMid = (tmMin + tmMax) / 2;
+    const diff = Math.abs(tm - tmMid);
+
+    if (tm >= tmMin && tm <= tmMax && diff < bestTmDiff) {
+      bestTmDiff = diff;
+      bestPrimer = candidate;
+    }
+  }
+
+  // Fallback to default length
+  if (!bestPrimer) {
+    if (direction === 'forward') {
+      bestPrimer = seq.substring(pos, pos + defaultLen);
+    } else {
+      bestPrimer = reverseComplement(seq.substring(seq.length - defaultLen));
+    }
+  }
+
+  return bestPrimer;
+}
+
+// ==================== RENDER RESULTS ====================
+function renderResults(primers, vectorName, method, removedStop, cdsLen) {
+  const resultsDiv = document.getElementById('results');
+  const primerDiv = document.getElementById('primerResults');
+  const warningsDiv = document.getElementById('warnings');
+  const summaryDiv = document.getElementById('summaryTable');
+
+  resultsDiv.style.display = 'block';
+
+  // Warnings
+  let warnHtml = '';
+  const tmRange = document.getElementById('tmRange').value.split('-').map(Number);
+
+  for (const p of primers) {
+    const tm = parseFloat(p.tmGene);
+    if (tm < tmRange[0] || tm > tmRange[1]) {
+      warnHtml += `<div class="warn-box">⚠️ <strong>${p.name}</strong> 基因特异区Tm = ${p.tmGene}°C，超出目标范围 ${tmRange.join('-')}°C。建议调整引物长度。</div>`;
+    }
+    if (parseFloat(p.gc) < 35 || parseFloat(p.gc) > 65) {
+      warnHtml += `<div class="warn-box">⚠️ <strong>${p.name}</strong> GC% = ${p.gc}%，不在最佳范围(40-60%)。</div>`;
+    }
+    if (p.len > parseInt(document.getElementById('maxLen').value)) {
+      warnHtml += `<div class="warn-box">⚠️ <strong>${p.name}</strong> 总长 ${p.len}bp 超过最大限制。</div>`;
+    }
+  }
+
+  // Tm difference check
+  const tmDiff = Math.abs(parseFloat(primers[0].tmGene) - parseFloat(primers[1].tmGene));
+  if (tmDiff > 5) {
+    warnHtml += `<div class="warn-box">⚠️ 正反向引物Tm差异 ${tmDiff.toFixed(1)}°C > 5°C，可能影响PCR退火效率。</div>`;
+  }
+
+  const methodText = method === 'infusion' ? '同源重组克隆 (ClonExpress/In-Fusion)' : '限制性酶切连接';
+
+  warnHtml = `<div class="info-box">
+    🧪 载体: <strong>${vectorName}</strong> &nbsp;|&nbsp; 克隆方法: <strong>${methodText}</strong><br>
+    CDS长度: ${cdsLen} bp &nbsp;|&nbsp; ${removedStop ? '✅ 已去除终止密码子（C端标签融合）' : '保留终止密码子'}
+  </div>` + warnHtml;
+
+  warningsDiv.innerHTML = warnHtml;
+
+  // Primer details
+  let html = '';
+  for (const p of primers) {
+    html += `
+    <div class="primer-result">
+      <h4>
+        ${p.direction === 'Forward' ? '➡️' : '⬅️'} ${p.name}
+        <span class="tag">${p.direction}</span>
+        <button class="copy-btn" onclick="copySeq('${p.fullSeq}')">复制序列</button>
+      </h4>
+      <div class="seq-line">
+        <span class="seq-label">完整引物:</span>
+        <span class="seq-value">5'- <span class="arm">${p.arm}</span><span class="gene">${p.geneSpecific}</span> -3'</span>
+      </div>
+      <div class="seq-line">
+        <span class="seq-label">纯序列:</span>
+        <span class="seq-value">${p.fullSeq}</span>
+      </div>
+      <div class="seq-line">
+        <span class="seq-label" style="color:var(--info);">同源臂/酶切:</span>
+        <span class="seq-value" style="color:var(--info);">${p.arm} (${p.arm.length} bp)</span>
+      </div>
+      <div class="seq-line">
+        <span class="seq-label" style="color:var(--danger);">基因特异区:</span>
+        <span class="seq-value" style="color:var(--danger);">${p.geneSpecific} (${p.geneLen} bp)</span>
+      </div>
+      <div class="primer-stats">
+        <span>总长: ${p.len} bp</span>
+        <span>基因特异区Tm: ${p.tmGene}°C</span>
+        <span>全长Tm: ${p.tmFull}°C</span>
+        <span>GC%: ${p.gc}%</span>
+      </div>
+    </div>`;
+  }
+  primerDiv.innerHTML = html;
+
+  // Summary table
+  summaryDiv.innerHTML = `
+  <table class="summary-table">
+    <tr>
+      <th>引物名称</th>
+      <th>序列 (5'→3')</th>
+      <th>长度</th>
+      <th>Tm(特异区)</th>
+      <th>GC%</th>
+    </tr>
+    ${primers.map(p => `
+    <tr>
+      <td style="font-family:sans-serif;font-weight:600;">${p.name}</td>
+      <td>${p.fullSeq}</td>
+      <td style="text-align:center;">${p.len}</td>
+      <td style="text-align:center;">${p.tmGene}°C</td>
+      <td style="text-align:center;">${p.gc}%</td>
+    </tr>`).join('')}
+  </table>`;
+
+  resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ==================== EXPORT FUNCTIONS ====================
+function copySeq(seq) {
+  navigator.clipboard.writeText(seq).then(() => {
+    showToast('✅ 序列已复制到剪贴板');
+  });
+}
+
+function copyAllPrimers() {
+  if (!designedPrimers.length) return;
+  const text = designedPrimers.map(p => `${p.name}\t${p.fullSeq}`).join('\n');
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('✅ 全部引物已复制');
+  });
+}
+
+function exportCSV() {
+  if (!designedPrimers.length) return;
+  let csv = '引物名称,序列(5→3),总长度(bp),基因特异区Tm(°C),全长Tm(°C),GC(%),同源臂,基因特异区\n';
+  for (const p of designedPrimers) {
+    csv += `${p.name},${p.fullSeq},${p.len},${p.tmGene},${p.tmFull},${p.gc},${p.arm},${p.geneSpecific}\n`;
+  }
+  downloadFile(csv, 'primers_design.csv', 'text/csv');
+}
+
+function exportOrder() {
+  if (!designedPrimers.length) return;
+  let txt = '====================================\n';
+  txt += '  引物合成订单\n';
+  txt += '====================================\n\n';
+  txt += `载体: ${document.getElementById('vectorSelect').selectedOptions[0].text}\n`;
+  txt += `日期: ${new Date().toLocaleDateString()}\n\n`;
+  txt += '引物名称\t\t序列(5\'→3\')\t\t\t长度\t纯化方式\n';
+  txt += '─'.repeat(80) + '\n';
+  for (const p of designedPrimers) {
+    const purify = p.len > 40 ? 'PAGE纯化' : '普通脱盐';
+    txt += `${p.name}\t\t${p.fullSeq}\t\t${p.len}bp\t${purify}\n`;
+  }
+  txt += '\n备注: 引物长度>40bp建议PAGE纯化\n';
+  downloadFile(txt, 'primer_order.txt', 'text/plain');
+}
+
+function downloadFile(content, filename, type) {
+  const blob = new Blob(['\uFEFF' + content], { type: type + ';charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function showToast(msg) {
+  const toast = document.createElement('div');
+  toast.textContent = msg;
+  toast.style.cssText = `
+    position:fixed;bottom:30px;left:50%;transform:translateX(-50%);
+    background:#2e7d32;color:white;padding:10px 24px;border-radius:8px;
+    font-size:0.9rem;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.2);
+    animation:fadeIn 0.3s ease;
+  `;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2000);
+}
+
+// ==================== EXAMPLE & CLEAR ====================
+function loadExample() {
+  document.getElementById('fastaInput').value = `>LcMYB1 Liriodendron chinense MYB transcription factor mRNA, complete CDS
+ATGGGGAGAAGCCAATGTTGGTCTGGAAAGGATCCAATGGACCAACTTTCCTCAAGAAAGCTCAAACTTG
+TGGCAACAGCTGCTGTAAACGGAGGAAATACTTCTGTGTCTCAAGATGAAGAAGATCAAATGGCTGTTAT
+AATTCATCTGCTTGCAGCCGGAGATCAAATCTACAAAGCACCATCAAATACTGGATCACCTAGTTGTGAT
+AAATCAGCAAGAAACTATTGGAACACTCATCTTAGGCTTCGTCCAGGAACAGATTCAATAAGGATAAGTA
+CTATTGCCAAGAGACTCGGCCTCAATAGAGATCCCAATAAAGAAGCCATTGTAGTCAAACACTCCAAAGA
+GTTCAAGAAACGTCTCAACATGCCAGAGAAAGAAATTGAGAACATCGATAACACTGTGATTCAAGTTTAG`;
+
+  document.getElementById('fastaInput').dispatchEvent(new Event('input'));
+  document.getElementById('vectorSelect').value = 'pRI101-6xFlag';
+  onVectorChange();
+}
+
+function clearAll() {
+  document.getElementById('fastaInput').value = '';
+  document.getElementById('fastaInput').dispatchEvent(new Event('input'));
+  document.getElementById('results').style.display = 'none';
+  designedPrimers = [];
+}
+</script>
+
+<script>
+(() => {
+  const translations = [
+    ["\u9e45\u638c\u6958\u57fa\u56e0\u8fc7\u8868\u8fbe\u5f15\u7269\u8bbe\u8ba1\u5de5\u5177", "Liriodendron Gene Overexpression Primer Designer"],
+    ["\u9e45\u638c\u6958\u57fa\u56e0\u8fc7\u8868\u8fbe\u5f15\u7269\u8bbe\u8ba1", "Liriodendron Gene Overexpression Primer Design"],
+    ["\ud83c\udf3f \u9e45\u638c\u6958\u57fa\u56e0\u8fc7\u8868\u8fbe\u5f15\u7269\u8bbe\u8ba1\u5de5\u5177", "🌿 Liriodendron Gene Overexpression Primer Designer"],
+    ["FASTA \u5e8f\u5217\uff08\u7c98\u8d34CDS\u5e8f\u5217\uff0c\u53ef\u542bFASTA\u5934\uff09", "FASTA sequence (paste a CDS sequence; FASTA header optional)"],
+    ["\u8f93\u5165\u57fa\u56e0\u5e8f\u5217", "Input gene sequence"],
+    ["\u9009\u62e9\u8f7d\u4f53", "Select vector"],
+    ["\u8fc7\u8868\u8fbe\u8f7d\u4f53", "Expression vector"],
+    ["\ud83d\udd27 \u81ea\u5b9a\u4e49\u8f7d\u4f53\uff08\u624b\u52a8\u8f93\u5165\u540c\u6e90\u81c2\uff09", "🔧 Custom vector (enter homology arms manually)"],
+    ["pRI101-AN-6×Flag\uff08CaMV35S\u542f\u52a8\u5b50\uff0cC\u7aef6×Flag\u6807\u7b7e\uff09", "pRI101-AN-6×Flag (CaMV35S promoter, C-terminal 6×Flag tag)"],
+    ["pRI101-AN-GFP\uff08CaMV35S\u542f\u52a8\u5b50\uff0cC\u7aefGFP\u6807\u7b7e\uff09", "pRI101-AN-GFP (CaMV35S promoter, C-terminal GFP tag)"],
+    ["pCAMBIA1300-35S\uff08CaMV35S\u542f\u52a8\u5b50\uff0c\u6f6e\u9709\u7d20\u6297\u6027\uff09", "pCAMBIA1300-35S (CaMV35S promoter, hygromycin resistance)"],
+    ["pCAMBIA2300-35S\uff08CaMV35S\u542f\u52a8\u5b50\uff0c\u5361\u90a3\u9709\u7d20\u6297\u6027\uff09", "pCAMBIA2300-35S (CaMV35S promoter, kanamycin resistance)"],
+    ["pBI121\uff08CaMV35S\u542f\u52a8\u5b50\uff0cGUS\u62a5\u544a\u57fa\u56e0\u66ff\u6362\uff09", "pBI121 (CaMV35S promoter, GUS reporter replacement)"],
+    ["pSuper1300-GFP\uff08\u8d85\u7ea7\u542f\u52a8\u5b50\uff0cC\u7aefGFP\u6807\u7b7e\uff09", "pSuper1300-GFP (super promoter, C-terminal GFP tag)"],
+    ["pCAMBIA1305-GFP\uff08CaMV35S\u542f\u52a8\u5b50\uff0cC\u7aefGFP\uff09", "pCAMBIA1305-GFP (CaMV35S promoter, C-terminal GFP)"],
+    ["pHB-Flag\uff08\u53ccCaMV35S\u542f\u52a8\u5b50\uff0cC\u7aefFlag\u6807\u7b7e\uff09", "pHB-Flag (dual CaMV35S promoters, C-terminal Flag tag)"],
+    ["pGreenII 62-SK\uff08CaMV35S\u542f\u52a8\u5b50\uff0c\u53cc\u5143\u8f7d\u4f53\uff09", "pGreenII 62-SK (CaMV35S promoter, binary vector)"],
+    ["\u542f\u52a8\u5b50", "Promoter"],
+    ["\u6807\u7b7e", "Tag"],
+    ["\u6297\u6027", "Resistance"],
+    ["\u514b\u9686\u4f4d\u70b9", "Cloning sites"],
+    ["\u9002\u7528\u4e8e", "Suitable for"],
+    ["\u81ea\u5b9a\u4e49\u8f7d\u4f53\u540d\u79f0", "Custom vector name"],
+    ["\u514b\u9686\u65b9\u6cd5", "Cloning method"],
+    ["\u540c\u6e90\u91cd\u7ec4 (ClonExpress/In-Fusion)", "Homologous recombination (ClonExpress/In-Fusion)"],
+    ["\u9650\u5236\u6027\u9176\u5207\u8fde\u63a5", "Restriction digest and ligation"],
+    ["\u6b63\u5411\u540c\u6e90\u81c2 / \u9176\u5207\u4f4d\u70b9\u4e0a\u6e38\u5e8f\u5217", "Forward homology arm / upstream sequence of the restriction site"],
+    ["\u53cd\u5411\u540c\u6e90\u81c2 / \u9176\u5207\u4f4d\u70b9\u4e0b\u6e38\u5e8f\u5217", "Reverse homology arm / downstream sequence of the restriction site"],
+    ["\u5c06\u81ea\u52a8\u53cd\u5411\u4e92\u8865", "Reverse complement automatically"],
+    ["\u8f7d\u4f53\u542bC\u7aef\u6807\u7b7e\uff08\u53bb\u9664\u7ec8\u6b62\u5bc6\u7801\u5b50\uff09", "Vector has a C-terminal tag (remove the stop codon)"],
+    ["\u5f15\u7269\u8bbe\u8ba1\u53c2\u6570", "Primer design parameters"],
+    ["\u540c\u6e90\u81c2\u957f\u5ea6", "Homology arm length"],
+    ["\u57fa\u56e0\u7279\u5f02\u6027\u5f15\u7269\u957f\u5ea6", "Gene-specific primer length"],
+    ["\u76ee\u6807 Tm \u8303\u56f4", "Target Tm range"],
+    ["\u6700\u5927\u5f15\u7269\u603b\u957f\u5ea6", "Maximum total primer length"],
+    ["\u53bb\u9664\u7ec8\u6b62\u5bc6\u7801\u5b50", "Remove stop codon"],
+    ["\u6dfb\u52a0 Kozak \u5e8f\u5217\u4f18\u5316", "Add Kozak sequence optimization"],
+    ["\u81ea\u52a8\u4f18\u5316\u5f15\u7269\u957f\u5ea6\u4ee5\u5339\u914d\u76ee\u6807Tm", "Automatically optimize primer length to match target Tm"],
+    ["\ud83e\uddec \u8bbe\u8ba1\u5f15\u7269", "🧬 Design primers"],
+    ["\ud83d\udccb \u8f7d\u5165\u793a\u4f8b", "📋 Load example"],
+    ["\ud83d\uddd1\ufe0f \u6e05\u7a7a", "🗑️ Clear"],
+    ["\u5f15\u7269\u8bbe\u8ba1\u7ed3\u679c", "Primer design results"],
+    ["\u5f15\u7269\u6c47\u603b\u8868", "Primer summary table"],
+    ["\u590d\u5236\u5168\u90e8\u5f15\u7269", "Copy all primers"],
+    ["\u5bfc\u51fa CSV", "Export CSV"],
+    ["\u5bfc\u51fa\u8ba2\u5355\u683c\u5f0f", "Export order format"],
+    ["\u5e8f\u5217\u957f\u5ea6", "Sequence length"],
+    ["\u8d77\u59cb\u5bc6\u7801\u5b50", "Start codon"],
+    ["\u7ec8\u6b62\u5bc6\u7801\u5b50", "Stop codon"],
+    ["\u8bf7\u8f93\u5165\u6709\u6548\u7684CDS\u5e8f\u5217\uff08\u81f3\u5c1130bp\uff09", "Please enter a valid CDS sequence (at least 30 bp)"],
+    ["\u5e8f\u5217\u4e0d\u4ee5ATG\u5f00\u5934\uff0c\u662f\u5426\u7ee7\u7eed\uff1f", "The sequence does not start with ATG. Continue?"],
+    ["\u57fa\u56e0\u7279\u5f02\u533aTm", "Gene-specific region Tm"],
+    ["\u8d85\u51fa\u76ee\u6807\u8303\u56f4", "outside the target range"],
+    ["\u4e0d\u5728\u6700\u4f73\u8303\u56f4(40-60%)", "outside the optimal range (40-60%)"],
+    ["\u603b\u957f", "Total length"],
+    ["\u8d85\u8fc7\u6700\u5927\u9650\u5236", "exceeds the maximum limit"],
+    ["\u6b63\u53cd\u5411\u5f15\u7269Tm\u5dee\u5f02", "Forward/reverse primer Tm difference"],
+    ["\u53ef\u80fd\u5f71\u54cdPCR\u9000\u706b\u6548\u7387", "may affect PCR annealing efficiency"],
+    ["\u8f7d\u4f53:", "Vector:"],
+    ["\u514b\u9686\u65b9\u6cd5:", "Cloning method:"],
+    ["CDS\u957f\u5ea6:", "CDS length:"],
+    ["\u5df2\u53bb\u9664\u7ec8\u6b62\u5bc6\u7801\u5b50\uff08C\u7aef\u6807\u7b7e\u878d\u5408\uff09", "Stop codon removed (C-terminal tag fusion)"],
+    ["\u4fdd\u7559\u7ec8\u6b62\u5bc6\u7801\u5b50", "Stop codon retained"],
+    ["\u590d\u5236\u5e8f\u5217", "Copy sequence"],
+    ["\u5b8c\u6574\u5f15\u7269", "Full primer"],
+    ["\u7eaf\u5e8f\u5217", "Sequence only"],
+    ["\u540c\u6e90\u81c2/\u9176\u5207", "Homology arm/restriction site"],
+    ["\u57fa\u56e0\u7279\u5f02\u533a", "Gene-specific region"],
+    ["\u5168\u957fTm", "Full-length Tm"],
+    ["\u5f15\u7269\u540d\u79f0", "Primer name"],
+    ["\u5e8f\u5217 (5'→3')", "Sequence (5'→3')"],
+    ["Tm(\u7279\u5f02\u533a)", "Tm (specific region)"],
+    ["\u5e8f\u5217\u5df2\u590d\u5236\u5230\u526a\u8d34\u677f", "Sequence copied to clipboard"],
+    ["\u5168\u90e8\u5f15\u7269\u5df2\u590d\u5236", "All primers copied"],
+    ["\u5f15\u7269\u5408\u6210\u8ba2\u5355", "Primer synthesis order"],
+    ["\u65e5\u671f", "Date"],
+    ["\u7eaf\u5316\u65b9\u5f0f", "Purification"],
+    ["PAGE\u7eaf\u5316", "PAGE purification"],
+    ["\u666e\u901a\u8131\u76d0", "Standard desalting"],
+    ["\u5907\u6ce8: \u5f15\u7269\u957f\u5ea6>40bp\u5efa\u8baePAGE\u7eaf\u5316", "Note: PAGE purification is recommended for primers longer than 40 bp"],
+    ["\u957f\u5ea6", "Length"],
+    ["\u7ec4", "set"],
+    ["\u4f8b\u5982", "Example"],
+  ].sort((a, b) => b[0].length - a[0].length);
+
+  const translate = value => {
+    let result = String(value ?? '');
+    for (const [source, target] of translations) result = result.split(source).join(target);
+    return result.replace(/[\u3400-\u9fff]/g, '');
+  };
+
+  const translateNode = node => {
+    if (!node) return;
+    if (node.nodeType === Node.TEXT_NODE) {
+      const next = translate(node.nodeValue);
+      if (next !== node.nodeValue) node.nodeValue = next;
+      return;
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE || node.tagName === 'SCRIPT' || node.tagName === 'STYLE') return;
+    for (const name of ['aria-label', 'title', 'placeholder', 'alt']) {
+      if (node.hasAttribute(name)) node.setAttribute(name, translate(node.getAttribute(name)));
+    }
+    node.childNodes.forEach(translateNode);
+  };
+
+  document.documentElement.lang = 'en';
+  document.title = 'Liriodendron Gene Overexpression Primer Designer';
+  translateNode(document.body);
+  new MutationObserver(records => records.forEach(record => {
+    if (record.type === 'attributes' || record.type === 'characterData') translateNode(record.target);
+    else record.addedNodes.forEach(translateNode);
+  })).observe(document.body, {
+    subtree: true,
+    childList: true,
+    characterData: true,
+    attributes: true,
+    attributeFilter: ['aria-label', 'title', 'placeholder', 'alt']
+  });
+})();
+</script>
+
+</body>
+</html>

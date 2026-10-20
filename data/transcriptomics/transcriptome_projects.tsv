@@ -1,0 +1,27 @@
+accession	strategy	runs	unique_samples	release_year	species	project_description	expression_atlas	source
+PRJNA1051388	RNA-Seq	6	6	2023	Liriodendron chinense; Liriodendron tulipifera	Comparative petal transcriptomes	no	NCBI SRA
+PRJNA1177383	RNA-Seq	33	33	2025	Liriodendron hybrid cultivar	Somatic embryogenesis	yes	NCBI SRA
+PRJNA1180065	RNA-Seq	6	6	2025	Liriodendron tulipifera	Developmental regulatory genes drive phylogenetic divergence in ovule evolution	no	NCBI SRA
+PRJNA218529	RNA-Seq	2	2	2013	Liriodendron chinense	Leaf and petal transcriptomes	no	NCBI SRA
+PRJNA273274	RNA-Seq	17	16	2015	Liriodendron tulipifera	Ozone stress	no	NCBI SRA
+PRJNA277997	RNA-Seq	6	6	2016	Liriodendron chinense	Pistil differences before and after pollination	no	NCBI SRA
+PRJNA46857	EST	10	10	2010	Liriodendron tulipifera	Ancestral angiosperm genome project	no	NCBI SRA
+PRJNA498177	RNA-Seq	4	4	2018	Liriodendron chinense	Leaf developmental stages	no	NCBI SRA
+PRJNA508825	RNA-Seq	2	2	2019	Liriodendron chinense; Liriodendron tulipifera	Comparative leaf transcriptomes	no	NCBI SRA
+PRJNA524246	RNA-Seq	21	21	2020	Liriodendron tulipifera	Petal transcriptome	no	NCBI SRA
+PRJNA556244	RNA-Seq	22	22	2020	Liriodendron chinense; Liriodendron tulipifera	Wood formation in normal, tension and opposite wood	no	NCBI SRA
+PRJNA559687	RNA-Seq	21	21	2019	Liriodendron chinense	Different organs	yes	NCBI SRA
+PRJNA665077	RNA-Seq	1	1	2020	Liriodendron chinense	Third-generation full-length mixed sample from seven tissues	no	NCBI SRA
+PRJNA677852	RNA-Seq	30	30	2021	Liriodendron chinense	Floral development in an ultra-long flowering mutant	no	NCBI SRA
+PRJNA679089	RNA-Seq	39	39	2021	Liriodendron	Cold and heat stress	yes	NCBI SRA
+PRJNA679101	RNA-Seq	21	21	2021	Liriodendron	Drought stress	yes	NCBI SRA
+PRJNA731020	RNA-Seq	2	2	2023	Liriodendron chinense	Xylem differentiation	no	NCBI SRA
+PRJNA746591	RNA-Seq	4	1	2022	Liriodendron chinense	Single-cell transcriptome and lignin	no	NCBI SRA
+PRJNA761222	RNA-Seq	12	12	2022	Liriodendron chinense x Liriodendron tulipifera	Cold stress	yes	NCBI SRA
+PRJNA773130	RNA-Seq	80	80	2021	Liriodendron chinense; Liriodendron tulipifera	Multi-dimensional environmental gradients	no	NCBI SRA
+PRJNA780974	RNA-Seq	9	9	2022	Liriodendron chinense	Leaf, bark and root	yes	NCBI SRA
+PRJNA790721	miRNA-Seq	12	1	2021	Liriodendron chinense	Four-organ miRNA atlas	no	NCBI SRA
+PRJNA884009	RNA-Seq	6	6	2022	Liriodendron tulipifera	Cold stress during leaf bud dormancy in two ecotypes	no	NCBI SRA
+PRJNA888954	RNA-Seq	1	1	2025	Liriodendron tulipifera	Evolution of mitochondrial genomes in perianth-bearing Piperales	no	NCBI SRA
+PRJNA929421	RNA-Seq	12	12	2023	Liriodendron chinense; Liriodendron chinense x Liriodendron tulipifera; Liriodendron tulipifera	Comparative Liriodendron petal transcriptomes	no	NCBI SRA
+DOI:10.1093/treephys/tpab039	RNA-seq + iTRAQ	0	0	2021	Liriodendron × sinoamericanum (diploid and tetraploid)	Diploid–tetraploid hybrid transcriptome–proteome comparison	no	Processed-public study

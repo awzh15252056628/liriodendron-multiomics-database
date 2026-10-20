@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Liriodendron Protein Structure Prediction Platform — ESMFold</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.0.4/3Dmol-min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,400;9..144,700;9..144,900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --deep:#050709;
+  --base:#0a0e14;
+  --panel:#0e1319;
+  --card:#131a24;
+  --card2:#182030;
+  --input:#0b1018;
+  --bdr:#1a2535;
+  --bdr2:#253548;
+  --mint:#00dfa2;
+  --mint2:#00c08a;
+  --mint-g:rgba(0,223,162,.07);
+  --mint-g2:rgba(0,223,162,.18);
+  --sky:#38bdf8;
+  --amber:#fbbf24;
+  --rose:#fb7185;
+  --lav:#a78bfa;
+  --t1:#e2e8f0;
+  --t2:#8494a9;
+  --t3:#4a5872;
+  --mono:'DM Mono',monospace;
+  --sans:'Noto Sans SC',system-ui,sans-serif;
+  --display:'Fraunces',serif;
+  --r:10px;
+  --rs:6px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--sans);background:var(--deep);color:var(--t1)}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:4px}
+
+/* ═══ HEADER ═══ */
+header{
+  height:50px;background:var(--panel);
+  border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 22px;position:relative;z-index:100;
+}
+header::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent 5%,var(--mint) 50%,transparent 95%);opacity:.35;
+}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-mark{
+  width:32px;height:32px;border-radius:8px;position:relative;
+  background:linear-gradient(135deg,#00dfa2 0%,#38bdf8 100%);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+.logo-mark span{font-size:13px;font-weight:900;color:#fff;z-index:1;letter-spacing:-1px}
+.logo-title{font-family:var(--display);font-size:16px;font-weight:700;letter-spacing:.2px}
+.logo-title em{font-style:normal;color:var(--mint)}
+.hdr-tags{display:flex;gap:7px}
+.htag{
+  padding:3px 10px;border-radius:20px;font-size:9px;font-weight:600;
+  letter-spacing:.5px;text-transform:uppercase;border:1px solid;
+}
+.htag-m{border-color:rgba(0,223,162,.3);color:var(--mint);background:var(--mint-g)}
+.htag-s{border-color:rgba(56,189,248,.3);color:var(--sky);background:rgba(56,189,248,.07)}
+
+/* ═══ LAYOUT ═══ */
+.layout{display:flex;height:calc(100vh - 50px)}
+
+/* ═══ LEFT ═══ */
+.left{
+  width:400px;min-width:400px;
+  background:var(--base);border-right:1px solid var(--bdr);
+  display:flex;flex-direction:column;
+}
+.left-scroll{flex:1;overflow-y:auto}
+
+.sec{padding:18px 20px;border-bottom:1px solid var(--bdr)}
+.sec-h{
+  font-size:9px;font-weight:700;text-transform:uppercase;
+  letter-spacing:2px;color:var(--t3);margin-bottom:12px;
+  display:flex;align-items:center;gap:6px;
+}
+.sec-h .d{width:5px;height:5px;border-radius:50%}
+.d-m{background:var(--mint);box-shadow:0 0 6px var(--mint)}
+.d-s{background:var(--sky);box-shadow:0 0 6px var(--sky)}
+.d-a{background:var(--amber);box-shadow:0 0 6px var(--amber)}
+.d-l{background:var(--lav);box-shadow:0 0 6px var(--lav)}
+
+/* Workflow */
+.wf{display:flex;gap:0;margin-bottom:4px;position:relative}
+.wf::before{content:'';position:absolute;top:15px;left:16px;right:16px;height:2px;background:var(--bdr)}
+.wf-s{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;z-index:1}
+.wf-n{
+  width:30px;height:30px;border-radius:50%;font-size:12px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--card);border:2px solid var(--bdr);color:var(--t3);transition:all .3s;
+}
+.wf-s.on .wf-n{border-color:var(--mint);color:var(--mint);background:var(--mint-g);box-shadow:0 0 12px var(--mint-g)}
+.wf-s.ok .wf-n{border-color:var(--mint);color:#fff;background:var(--mint)}
+.wf-l{font-size:8px;font-weight:600;color:var(--t3);letter-spacing:.3px;text-align:center}
+.wf-s.on .wf-l,.wf-s.ok .wf-l{color:var(--t2)}
+
+/* Input */
+.fg{margin-bottom:10px}
+.fg label{display:block;font-size:10px;color:var(--t2);font-weight:600;margin-bottom:4px;letter-spacing:.3px}
+.fg textarea,.fg input{
+  width:100%;background:var(--input);border:1px solid var(--bdr);
+  border-radius:var(--rs);padding:9px 11px;color:var(--t1);
+  font-family:var(--mono);font-size:11px;line-height:1.55;
+  outline:none;transition:border-color .2s,box-shadow .2s;
+}
+.fg textarea{resize:vertical;min-height:120px}
+.fg textarea:focus,.fg input:focus{border-color:var(--mint);box-shadow:0 0 0 3px var(--mint-g)}
+.fg .note{font-size:9px;color:var(--t3);margin-top:3px;line-height:1.4}
+
+/* File */
+.fup{
+  border:1px dashed var(--bdr);border-radius:var(--rs);padding:12px;
+  text-align:center;cursor:pointer;background:var(--input);transition:all .2s;
+}
+.fup:hover{border-color:var(--mint);background:var(--mint-g)}
+.fup input{display:none}
+.fup-ic{font-size:20px;margin-bottom:3px}
+.fup-t{font-size:10px;color:var(--t3)}
+
+/* Samples */
+.sg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.si{
+  background:var(--input);border:1px solid var(--bdr);border-radius:var(--rs);
+  padding:9px 6px;cursor:pointer;text-align:center;transition:all .2s;
+}
+.si:hover{border-color:var(--mint);background:var(--mint-g)}
+.si-n{font-size:11px;font-weight:700;color:var(--t1);margin-bottom:1px}
+.si-d{font-size:8px;color:var(--t3)}
+
+/* Buttons */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;
+  cursor:pointer;border:none;transition:all .25s;font-family:var(--sans);
+}
+.btn-go{
+  background:linear-gradient(135deg,var(--mint),#00b8d4);
+  color:#fff;width:100%;position:relative;overflow:hidden;
+}
+.btn-go::after{
+  content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);
+  transition:left .5s;
+}
+.btn-go:hover::after{left:100%}
+.btn-go:hover{box-shadow:0 6px 25px rgba(0,223,162,.3);transform:translateY(-1px)}
+.btn-go:active{transform:translateY(0)}
+.btn-go:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+.btn-dl{
+  background:var(--card);border:1px solid var(--bdr);color:var(--t1);
+  width:100%;margin-top:8px;
+}
+.btn-dl:hover{border-color:var(--mint);color:var(--mint);background:var(--mint-g)}
+.btn-dl:disabled{opacity:.3;cursor:not-allowed}
+
+.btn-icon{
+  width:34px;height:34px;padding:0;border-radius:8px;
+  background:rgba(14,19,25,.9);backdrop-filter:blur(8px);
+  border:1px solid var(--bdr);color:var(--t2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+  transition:all .2s;
+}
+.btn-icon:hover{border-color:var(--mint);color:var(--mint)}
+.btn-icon.active{border-color:var(--mint);color:var(--mint);background:var(--mint-g)}
+
+/* Progress */
+.pw{margin-top:14px}
+.pb{height:5px;background:var(--input);border-radius:3px;overflow:hidden}
+.pf{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--mint),var(--sky));width:0%;transition:width .35s}
+.pi{display:flex;justify-content:space-between;margin-top:5px;font-size:10px;color:var(--t3)}
+
+/* Seq Stats */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.stat{background:var(--card);border:1px solid var(--bdr);border-radius:var(--rs);padding:8px;text-align:center}
+.stat-v{font-family:var(--mono);font-size:16px;font-weight:600;color:var(--mint)}
+.stat-l{font-size:8px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;font-weight:600}
+
+/* ═══ CENTER ═══ */
+.center{flex:1;display:flex;flex-direction:column;position:relative;background:#040608}
+
+.vtb{position:absolute;top:12px;left:12px;z-index:50;display:flex;gap:5px;flex-wrap:wrap}
+.vtb-right{position:absolute;top:12px;right:12px;z-index:50;display:flex;gap:5px}
+
+.vinfo{position:absolute;bottom:12px;left:12px;z-index:50;display:flex;gap:6px;flex-wrap:wrap}
+.vc{
+  background:rgba(14,19,25,.9);backdrop-filter:blur(8px);
+  border:1px solid var(--bdr);border-radius:var(--rs);
+  padding:4px 10px;font-size:10px;color:var(--t3);
+  display:flex;align-items:center;gap:4px;
+}
+.vc b{color:var(--t1);font-family:var(--mono);font-weight:500}
+
+/* pLDDT Legend */
+.plddt-legend{
+  position:absolute;bottom:12px;right:12px;z-index:50;
+  background:rgba(14,19,25,.92);backdrop-filter:blur(8px);
+  border:1px solid var(--bdr);border-radius:var(--rs);
+  padding:8px 12px;display:none;
+}
+.plddt-legend.show{display:block}
+.plddt-legend h4{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;font-weight:700}
+.plddt-row{display:flex;align-items:center;gap:6px;margin-bottom:3px;font-size:10px;color:var(--t2)}
+.plddt-row .sq{width:12px;height:12px;border-radius:2px}
+
+#viewer-box{flex:1;position:relative}
+
+/* Placeholder */
+.ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px}
+.ph-dna{width:160px;height:160px;position:relative}
+.ph-dna .orbit{
+  position:absolute;border:1.5px solid;border-radius:50%;opacity:.2;
+}
+.ph-dna .orbit:nth-child(1){inset:0;border-color:var(--mint);animation:orb 12s linear infinite}
+.ph-dna .orbit:nth-child(2){inset:15%;border-color:var(--sky);animation:orb 8s linear infinite reverse}
+.ph-dna .orbit:nth-child(3){inset:30%;border-color:var(--lav);animation:orb 5s linear infinite}
+.ph-dna .nucleus{
+  position:absolute;inset:42%;border-radius:50%;
+  background:radial-gradient(circle,var(--mint),var(--sky));
+  box-shadow:0 0 40px rgba(0,223,162,.3),0 0 80px rgba(0,223,162,.1);
+}
+@keyframes orb{to{transform:rotate(360deg)}}
+.ph-anim{animation:phFloat 4s ease-in-out infinite}
+@keyframes phFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.ph p{font-size:14px;color:var(--t3);text-align:center;line-height:1.7}
+.ph p span{font-size:11px;opacity:.5}
+
+/* Loading */
+.ov{
+  position:absolute;inset:0;background:rgba(4,6,8,.88);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  z-index:200;opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.ov.on{opacity:1;pointer-events:auto}
+.ov-sp{
+  width:42px;height:42px;border:3px solid var(--bdr);
+  border-top-color:var(--mint);border-radius:50%;animation:orb .7s linear infinite;
+}
+.ov-t{font-size:13px;color:var(--t2);text-align:center;max-width:280px;line-height:1.5}
+
+/* ═══ RIGHT ═══ */
+.right{
+  width:320px;min-width:320px;background:var(--base);
+  border-left:1px solid var(--bdr);display:flex;flex-direction:column;
+}
+.tabs{display:flex;border-bottom:1px solid var(--bdr)}
+.tab{
+  flex:1;padding:10px 6px;text-align:center;font-size:10px;font-weight:700;
+  color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;
+  transition:all .2s;letter-spacing:.4px;text-transform:uppercase;
+}
+.tab:hover{color:var(--t2)}
+.tab.on{color:var(--mint);border-bottom-color:var(--mint)}
+.rscroll{flex:1;overflow-y:auto}
+.rsec{padding:14px 16px;display:none}
+.rsec.on{display:block}
+
+/* pLDDT chart */
+.plddt-chart{
+  width:100%;height:120px;background:var(--card);border:1px solid var(--bdr);
+  border-radius:var(--rs);overflow:hidden;position:relative;margin-top:10px;
+}
+.plddt-chart canvas{width:100%;height:100%}
+
+/* Ramachandran placeholder */
+.rama-box{
+  width:100%;aspect-ratio:1;background:var(--card);border:1px solid var(--bdr);
+  border-radius:var(--rs);display:flex;align-items:center;justify-content:center;
+  margin-top:10px;position:relative;overflow:hidden;
+}
+.rama-box canvas{width:100%;height:100%}
+
+/* Structure info cards */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.icard{background:var(--card);border:1px solid var(--bdr);border-radius:var(--rs);padding:10px}
+.icard-l{font-size:8px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:3px}
+.icard-v{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--mint)}
+.icard-v .u{font-size:9px;color:var(--t3);font-weight:400}
+
+/* Seq display */
+.seq-display{
+  font-family:var(--mono);font-size:10px;line-height:1.55;
+  word-break:break-all;background:var(--input);border:1px solid var(--bdr);
+  border-radius:var(--rs);padding:10px;max-height:160px;overflow-y:auto;
+  margin-top:8px;
+}
+
+/* AA composition bars */
+.aa-bars{margin-top:10px}
+.aa-row{display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:10px}
+.aa-name{width:28px;font-family:var(--mono);font-weight:600;color:var(--t2);text-align:right}
+.aa-bar{flex:1;height:8px;background:var(--input);border-radius:4px;overflow:hidden}
+.aa-fill{height:100%;border-radius:4px;transition:width .6s ease}
+.aa-pct{width:36px;font-family:var(--mono);font-size:9px;color:var(--t3)}
+
+/* Log */
+.logbox{
+  background:var(--input);border:1px solid var(--bdr);border-radius:var(--rs);
+  padding:10px;max-height:100%;overflow-y:auto;font-family:var(--mono);font-size:10px;line-height:1.7;
+}
+.le{color:var(--t3)}
+.le .lt{margin-right:5px}
+.le.info .lm{color:var(--sky)}
+.le.ok .lm{color:var(--mint);font-weight:600}
+.le.warn .lm{color:var(--amber)}
+.le.err .lm{color:var(--rose)}
+
+/* Toast */
+.toast{
+  position:fixed;top:60px;right:20px;z-index:999;
+  background:var(--card2);border:1px solid var(--bdr);border-radius:var(--r);
+  padding:12px 20px;font-size:12px;color:var(--t1);
+  box-shadow:0 10px 40px rgba(0,0,0,.6);
+  transform:translateX(130%);transition:transform .4s cubic-bezier(.4,0,.2,1);
+  max-width:360px;
+}
+.toast.show{transform:translateX(0)}
+.toast.t-ok{border-left:3px solid var(--mint)}
+.toast.t-er{border-left:3px solid var(--rose)}
+.toast.t-in{border-left:3px solid var(--sky)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark"><span>LC</span></div>
+    <div class="logo-title"><em>鹅掌楸</em> 蛋白质结构预测</div>
+  </div>
+  <div class="hdr-tags">
+    <div class="htag htag-m">ESMFold Structure Prediction</div>
+    <div class="htag htag-s">3Dmol.js Visualization</div>
+  </div>
+</header>
+
+<div class="layout">
+
+<!-- ═══ LEFT PANEL ═══ -->
+<div class="left"><div class="left-scroll">
+
+  <!-- Workflow -->
+  <div class="sec">
+    <div class="sec-h"><div class="d d-m"></div>工作流程</div>
+    <div class="wf">
+      <div class="wf-s on" id="ws1"><div class="wf-n">1</div><div class="wf-l">输入序列</div></div>
+      <div class="wf-s" id="ws2"><div class="wf-n">2</div><div class="wf-l">结构预测</div></div>
+      <div class="wf-s" id="ws3"><div class="wf-n">3</div><div class="wf-l">3D可视化</div></div>
+      <div class="wf-s" id="ws4"><div class="wf-n">4</div><div class="wf-l">下载PDB</div></div>
+    </div>
+  </div>
+
+  <!-- FASTA Input -->
+  <div class="sec">
+    <div class="sec-h"><div class="d d-m"></div>FASTA 序列输入</div>
+    <div class="fg">
+      <label>粘贴氨基酸序列（FASTA格式或纯序列）</label>
+      <textarea id="fasta-input" placeholder=">LcHSP90 Liriodendron chinense Heat Shock Protein 90&#10;MPEEVHHGEEEVETFAFQAEIAQLMSLIINTFYSNKEIFLRE&#10;LISNASDAADKIRYESLTDPSKLDSGKELHINLIPNKQDRTL&#10;TIVDTGIGMTKADLINNLGTIAKSGTKAFMEALQAGADISM&#10;IGQFGVGFYSAYLVAEKVTVITKHNDD..." spellcheck="false" oninput="updateStats()"></textarea>
+      <div class="note">
+        ⚠️ ESMFold 建议序列长度 ≤ 400 aa（更长序列可能需要较长时间）<br>
+        支持标准20种氨基酸单字母编码，自动忽略空格和数字
+      </div>
+    </div>
+    <div class="fg">
+      <label>或上传文件</label>
+      <div class="fup" onclick="document.getElementById('fup-in').click()">
+        <div class="fup-ic">📂</div>
+        <div class="fup-t" id="fup-label">点击选择 .fasta / .fa / .txt / .pdb 文件</div>
+        <input type="file" id="fup-in" accept=".fasta,.fa,.faa,.txt,.pdb,.ent,.cif" onchange="handleUpload(this)">
+      </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="stats" id="seq-stats" style="display:none">
+      <div class="stat"><div class="stat-v" id="st-len">0</div><div class="stat-l">残基数</div></div>
+      <div class="stat"><div class="stat-v" id="st-mw">0</div><div class="stat-l">≈MW (kDa)</div></div>
+      <div class="stat"><div class="stat-v" id="st-pi">0</div><div class="stat-l">≈pI</div></div>
+    </div>
+  </div>
+
+  <!-- Samples -->
+  <div class="sec">
+    <div class="sec-h"><div class="d d-l"></div>鹅掌楸示例蛋白</div>
+    <div style="font-size:9px;color:var(--t3);margin-bottom:8px">点击快速加载 · Liriodendron chinense 蛋白序列</div>
+    <div class="sg">
+      <div class="si" onclick="loadSample('hsp90')"><div class="si-n">LcHSP90</div><div class="si-d">热激蛋白90</div></div>
+      <div class="si" onclick="loadSample('sod')"><div class="si-n">LcSOD</div><div class="si-d">超氧化物歧化酶</div></div>
+      <div class="si" onclick="loadSample('myb')"><div class="si-n">LcMYB</div><div class="si-d">MYB转录因子</div></div>
+      <div class="si" onclick="loadSample('wrky')"><div class="si-n">LcWRKY</div><div class="si-d">WRKY转录因子</div></div>
+      <div class="si" onclick="loadSample('nac')"><div class="si-n">LcNAC</div><div class="si-d">NAC转录因子</div></div>
+      <div class="si" onclick="loadSample('pal')"><div class="si-n">LcPAL</div><div class="si-d">苯丙氨酸解氨酶</div></div>
+      <div class="si" onclick="loadSample('pal4cl')"><div class="si-n">Lc4CL</div><div class="si-d">4-香豆酸辅酶A连接酶</div></div>
+      <div class="si" onclick="loadSample('chs')"><div class="si-n">LcCHS</div><div class="si-d">查尔酮合酶</div></div>
+      <div class="si" onclick="loadSample('apx')"><div class="si-n">LcAPX</div><div class="si-d">抗坏血酸过氧化物酶</div></div>
+    </div>
+  </div>
+
+  <!-- Run & Download -->
+  <div class="sec">
+    <button class="btn btn-go" id="btn-run" onclick="runPredict()">
+      🧬 预测蛋白质三维结构 (ESMFold)
+    </button>
+    <button class="btn btn-dl" id="btn-dl" onclick="downloadPDB()" disabled>
+      💾 下载 PDB 结构文件
+    </button>
+    <div class="pw" id="pw" style="display:none">
+      <div class="pb"><div class="pf" id="pf"></div></div>
+      <div class="pi"><span id="pl">准备中...</span><span id="pp">0%</span></div>
+    </div>
+  </div>
+
+</div></div>
+
+<!-- ═══ CENTER VIEWER ═══ -->
+<div class="center">
+  <div class="vtb">
+    <button class="btn-icon active" onclick="setStyle('cartoon',this)" title="卡通">🎭</button>
+    <button class="btn-icon" onclick="setStyle('stick',this)" title="棒状">🔗</button>
+    <button class="btn-icon" onclick="setStyle('sphere',this)" title="球状">⚪</button>
+    <button class="btn-icon" onclick="setStyle('surface',this)" title="分子表面">🌊</button>
+    <button class="btn-icon" onclick="setStyle('line',this)" title="线状">📐</button>
+    <button class="btn-icon" onclick="colorPLDDT()" title="pLDDT着色" id="btn-plddt">🎨</button>
+    <button class="btn-icon" onclick="colorChain()" title="按链着色">🔀</button>
+    <button class="btn-icon" onclick="colorHydro()" title="疏水性着色">💧</button>
+  </div>
+  <div class="vtb-right">
+    <button class="btn-icon" onclick="toggleLabels()" title="残基标签">🏷️</button>
+    <button class="btn-icon" onclick="toggleSpin()" title="自动旋转">💫</button>
+    <button class="btn-icon" onclick="resetView()" title="重置视角">🔄</button>
+    <button class="btn-icon" onclick="screenshot()" title="截图保存">📸</button>
+  </div>
+
+  <div id="viewer-box">
+    <div class="ph" id="placeholder">
+      <div class="ph-dna ph-anim">
+        <div class="orbit"></div><div class="orbit"></div><div class="orbit"></div>
+        <div class="nucleus"></div>
+      </div>
+      <div>
+        <p>输入 FASTA 序列 → 预测蛋白质三维结构</p>
+        <p><span>由 ESMFold 提供结构预测 · 3Dmol.js 提供可视化</span></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="vinfo" id="vinfo" style="display:none">
+    <div class="vc">原子 <b id="vi-at">0</b></div>
+    <div class="vc">残基 <b id="vi-res">0</b></div>
+    <div class="vc">链 <b id="vi-ch">0</b></div>
+    <div class="vc">来源 <b id="vi-src">-</b></div>
+    <div class="vc">平均pLDDT <b id="vi-plddt">-</b></div>
+  </div>
+
+  <div class="plddt-legend" id="plddt-leg">
+    <h4>pLDDT 置信度</h4>
+    <div class="plddt-row"><div class="sq" style="background:#00dfa2"></div> 很高 (&gt;90)</div>
+    <div class="plddt-row"><div class="sq" style="background:#38bdf8"></div> 高 (70–90)</div>
+    <div class="plddt-row"><div class="sq" style="background:#fbbf24"></div> 低 (50–70)</div>
+    <div class="plddt-row"><div class="sq" style="background:#fb7185"></div> 很低 (&lt;50)</div>
+  </div>
+
+  <div class="ov" id="ov">
+    <div class="ov-sp"></div>
+    <div class="ov-t" id="ov-t">正在通过 ESMFold 预测蛋白质三维结构...</div>
+  </div>
+</div>
+
+<!-- ═══ RIGHT PANEL ═══ -->
+<div class="right">
+  <div class="tabs">
+    <div class="tab on" onclick="rtab(this,'r-info')">结构信息</div>
+    <div class="tab" onclick="rtab(this,'r-seq')">序列分析</div>
+    <div class="tab" onclick="rtab(this,'r-log')">运行日志</div>
+  </div>
+  <div class="rscroll">
+
+    <!-- Structure Info -->
+    <div class="rsec on" id="r-info">
+      <div class="sec-h"><div class="d d-m"></div>结构概览</div>
+      <div class="info-grid" id="info-grid">
+        <div class="icard"><div class="icard-l">原子数</div><div class="icard-v" id="ri-at">--</div></div>
+        <div class="icard"><div class="icard-l">残基数</div><div class="icard-v" id="ri-res">--</div></div>
+        <div class="icard"><div class="icard-l">链数</div><div class="icard-v" id="ri-ch">--</div></div>
+        <div class="icard"><div class="icard-l">平均 pLDDT</div><div class="icard-v" id="ri-plddt">--</div></div>
+        <div class="icard"><div class="icard-l">序列长度</div><div class="icard-v" id="ri-len">-- <span class="u">aa</span></div></div>
+        <div class="icard"><div class="icard-l">估算分子量</div><div class="icard-v" id="ri-mw">-- <span class="u">kDa</span></div></div>
+      </div>
+
+      <div style="margin-top:16px">
+        <div class="sec-h"><div class="d d-s"></div>pLDDT 分布</div>
+        <div class="plddt-chart"><canvas id="plddt-canvas"></canvas></div>
+        <div style="display:flex;gap:10px;margin-top:6px;font-size:9px;color:var(--t3)">
+          <span>X轴: 残基位置</span><span>Y轴: pLDDT 置信度 (0–100)</span>
+        </div>
+      </div>
+
+      <div style="margin-top:16px">
+        <div class="sec-h"><div class="d d-a"></div>二级结构统计</div>
+        <div class="info-grid" id="ss-grid">
+          <div class="icard"><div class="icard-l">α-螺旋</div><div class="icard-v" id="ri-helix">--%</div></div>
+          <div class="icard"><div class="icard-l">β-折叠</div><div class="icard-v" id="ri-sheet">--%</div></div>
+          <div class="icard"><div class="icard-l">环区/卷曲</div><div class="icard-v" id="ri-coil">--%</div></div>
+          <div class="icard"><div class="icard-l">无序区</div><div class="icard-v" id="ri-disor">--%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sequence Analysis -->
+    <div class="rsec" id="r-seq">
+      <div class="sec-h"><div class="d d-l"></div>序列可视化</div>
+      <div class="seq-display" id="seq-disp"><span style="color:var(--t3)">输入序列后显示</span></div>
+
+      <div style="margin-top:14px">
+        <div class="sec-h"><div class="d d-s"></div>氨基酸组成</div>
+        <div class="aa-bars" id="aa-bars"></div>
+      </div>
+    </div>
+
+    <!-- Log -->
+    <div class="rsec" id="r-log">
+      <div class="sec-h"><div class="d d-m"></div>运行日志</div>
+      <div class="logbox" id="logbox">
+        <div class="le info"><span class="lt">[系统]</span><span class="lm">平台就绪 — 输入FASTA序列或点击示例开始</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════ STATE ═══════════════
+let viewer = null, model = null, pdbData = null;
+let spinning = false, labelsOn = false, curStyle = 'cartoon';
+let plddtMode = false;
+let parsedSeq = '', parsedHeader = '';
+
+// ═══════════════ SAMPLES ═══════════════
+const S={
+hsp90:{n:'LcHSP90',f:`>LcHSP90 Liriodendron chinense Heat Shock Protein 90
+MPEEVHHGEEEVETFAFQAEIAQLMSLIINTFYSNKEIFLRELISNASDAADKIRYESLTDPSKLDSGKELHINLIPNKQDRTLTIVDTGIGMTKADLINNLGTIAKSGTKAFMEALQAGADISMIGQFGVGFYSAYLVAEKVTVITKHNDDEQYAWESSAGGSFTVTLDEVNERIGRGTKILFNALTKD`},
+sod:{n:'LcSOD',f:`>LcCuZnSOD Liriodendron chinense Cu/Zn Superoxide Dismutase
+MATKAVCVLNGSQDSPLMGEYVNFENNAALQPAEKQFPIDAIMDQAIELPDVDKVISLSGPHSIIGRAVVVHEKEDDLGKGGNEESTKTGNAGSRLACGVIGIAKGPDEGPHTGDHGAPTSSERHVGDLGNLTADENGNVAPGPVDGKLTSAIEAGGRS`},
+myb:{n:'LcMYB',f:`>LcMYB1 Liriodendron chinense MYB transcription factor
+MGRSPCCBKVGLKKGPWTEEEBQKLAQRTGRWTATEEBKRLAYITRHGEGCWRSLPKRAGLERCQKSVGGLNQBMAKLIAEYIRLQQAQASKCRRLCETLQYINKASESHLKKEIQEMLESSIPVPSQDFLSLSTEVDNLISGYWRQVKAAGLEG`},
+wrky:{n:'LcWRKY',f:`>LcWRKY33 Liriodendron chinense WRKY33
+MESSSSSSSKFPAFNQFDPSAFQPPAFSSIPPTFSSLPPNWRKYGQKPIQGSPYPRCYYRCSKPGCQVKKVERSDADPSFFITTYEGEHNHSVPAPNEVERKYDBGSSVVVTTTPEDBGQSWRKYGQKEILGNTFPRSYYKCAPGCGVKKVBERSDDPSFFTTYAGNHNH`},
+nac:{n:'LcNAC',f:`>LcNAC1 Liriodendron chinense NAC domain protein
+MDPLHQTLPGFRFHPTDEELVVEYLHKKAPAGAKKTESWVMHEYKLDDPTNEIYKKAGRCKWTLPYKEPTGHKKYGKTDWIMHEYRASNSAKKPKGDRVNRATGGKIVIRFHKPLEGTDKMAIEEYRDQHNATMKEAIVDWKATERDLDLSNLT`},
+pal:{n:'LcPAL',f:`>LcPAL1 Liriodendron chinense Phenylalanine Ammonia Lyase
+MAATNGETTHGFADVGGAISGSSEMETILQVAESLLNHCAPGGASPDLNALQKYGVTIHDAASSLSPIIKQLVRAIGELLHQAFDGKGVQPNEADAIELAPLYEALRLLILSQYVADHI`},
+pal4cl:{n:'Lc4CL',f:`>Lc4CL Liriodendron chinense 4-Coumarate-CoA Ligase
+MEKQIPFDVRLPDEKPDVKIIVPNHETYFYSQLNKTQVAAYDEDPLKFESVDPAVVLKTAEDLPKFITHSKVPITAKQFEELKKGRINKAIIINENLYCTSSGTGLPKGVMLTHKGLITSVAQMVDGENANVFAYLPLFHIYALNSVLLCALRG`},
+chs:{n:'LcCHS',f:`>LcCHS Liriodendron chinense Chalcone Synthase
+MAPAMEEIRQAQRADGPATVMAIGTATPPNCVDQSTYPDYYFRITNSEHKTELKEKFKRMCDKSMIRKRYMHLTEEILKENPNMCAYMAPSLDARQDIVVVEVPRLGKEAAVKAIKEWGQPKSKITHLIFCTTSGVDMPGADYQLTKLLGLRPSVKRVMMYQQGCFAGGTVLRLAKD`},
+apx:{n:'LcAPX',f:`>LcAPX Liriodendron chinense Ascorbate Peroxidase
+MGKSYPTVPADIPEAFKQLASNHGLAFIERQKGKPIAAKGLEIIPAYQGDVEDLKKKLPAELQYGAPFDKKDYAEAHAKKGFNSLLWDLIASNPALHACEKSAPKVDGLAPEDLNAIAAGKDYPTLMRWHTASNTIFCGGHLAGATHP`}
+};
+
+// ═══════════════ INIT ═══════════════
+function initViewer(){
+  viewer=$3Dmol.createViewer(document.getElementById('viewer-box'),{
+    backgroundColor:'#040608',antialias:true,cartoonQuality:10
+  });
+}
+window.addEventListener('load',initViewer);
+window.addEventListener('resize',()=>{if(viewer)viewer.resize()});
+
+// ═══════════════ PARSE ═══════════════
+function parseFasta(text){
+  text=text.trim();let hdr='',seq='';
+  for(const line of text.split('\n')){
+    const l=line.trim();
+    if(l.startsWith('>'))hdr=l.slice(1).trim();
+    else seq+=l.replace(/[^A-Za-z]/g,'');
+  }
+  if(!seq&&!hdr)seq=text.replace(/[^A-Za-z]/g,'');
+  return{header:hdr,seq:seq.toUpperCase()};
+}
+
+// ═══════════════ FILE ═══════════════
+function handleUpload(input){
+  const f=input.files[0]; if(!f)return;
+  document.getElementById('fup-label').textContent=f.name;
+  document.getElementById('fup-label').style.color='var(--mint)';
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const t=e.target.result;
+    if(f.name.match(/\.(pdb|ent|cif)$/i)){
+      pdbData=t;
+      log('ok',`PDB文件已加载: ${f.name}`);
+      showPDB(t,'PDB文件');
+      toast('PDB结构已加载','ok');
+    }else{
+      document.getElementById('fasta-input').value=t;
+      updateStats();
+      log('info',`FASTA文件已加载: ${f.name}`);
+    }
+  };
+  reader.readAsText(f);
+}
+
+// ═══════════════ SAMPLES ═══════════════
+function loadSample(k){
+  const s=S[k]; if(!s)return;
+  document.getElementById('fasta-input').value=s.f;
+  updateStats();
+  log('info',`已加载示例: ${s.n}`);
+  toast(`已加载 ${s.n}`,'in');
+}
+
+// ═══════════════ STATS ═══════════════
+function updateStats(){
+  const{header,seq}=parseFasta(document.getElementById('fasta-input').value);
+  parsedSeq=seq; parsedHeader=header;
+  const el=document.getElementById('seq-stats');
+  if(!seq){el.style.display='none';return;}
+  el.style.display='grid';
+  document.getElementById('st-len').textContent=seq.length;
+  document.getElementById('st-mw').textContent=(seq.length*0.11).toFixed(1);
+  document.getElementById('st-pi').textContent=estimatePI(seq).toFixed(1);
+  updateSeqPanel(header,seq);
+}
+
+function estimatePI(seq){
+  // Very rough estimate
+  let acidic=0,basic=0;
+  for(const c of seq){if('DE'.includes(c))acidic++;if('RKH'.includes(c))basic++;}
+  const ratio=basic/(acidic||1);
+  return Math.min(12,Math.max(3,5.5+ratio*2.5-acidic/seq.length*8)).toFixed(1)*1;
+}
+
+// ═══════════════ SEQ PANEL ═══════════════
+function updateSeqPanel(header,seq){
+  // Colored sequence
+  let html='';
+  const colors={D:'#fb7185',E:'#fb7185',R:'#38bdf8',K:'#38bdf8',H:'#38bdf8',
+    A:'#fbbf24',I:'#fbbf24',L:'#fbbf24',M:'#fbbf24',F:'#fbbf24',W:'#fbbf24',V:'#fbbf24',P:'#fbbf24',
+    S:'#00dfa2',T:'#00dfa2',Y:'#00dfa2',C:'#00dfa2',N:'#00dfa2',Q:'#00dfa2',G:'#00dfa2'};
+  for(let i=0;i<seq.length;i++){
+    const c=seq[i];
+    html+=`<span style="color:${colors[c]||'#8494a9'}">${c}</span>`;
+    if((i+1)%60===0)html+='<br>';
+  }
+  document.getElementById('seq-disp').innerHTML=html;
+
+  // AA composition
+  const counts={};
+  for(const c of seq)counts[c]=(counts[c]||0)+1;
+  const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  const max=sorted[0]?sorted[0][1]:1;
+  let barsHTML='';
+  const aaColors={A:'#fbbf24',R:'#38bdf8',N:'#00dfa2',D:'#fb7185',C:'#a78bfa',E:'#fb7185',Q:'#00dfa2',G:'#00dfa2',H:'#38bdf8',I:'#fbbf24',L:'#fbbf24',K:'#38bdf8',M:'#fbbf24',F:'#fbbf24',P:'#fbbf24',S:'#00dfa2',T:'#00dfa2',W:'#fbbf24',Y:'#00dfa2',V:'#fbbf24'};
+  for(const[aa,cnt]of sorted){
+    const pct=(cnt/seq.length*100).toFixed(1);
+    const w=(cnt/max*100).toFixed(0);
+    barsHTML+=`<div class="aa-row">
+      <div class="aa-name">${aa}</div>
+      <div class="aa-bar"><div class="aa-fill" style="width:${w}%;background:${aaColors[aa]||'#8494a9'}"></div></div>
+      <div class="aa-pct">${cnt} (${pct}%)</div>
+    </div>`;
+  }
+  document.getElementById('aa-bars').innerHTML=barsHTML;
+}
+
+// ═══════════════ PREDICT ═══════════════
+async function runPredict(){
+  const{header,seq}=parseFasta(document.getElementById('fasta-input').value);
+  parsedSeq=seq;parsedHeader=header;
+
+  if(!seq){log('err','请输入FASTA序列');toast('请输入FASTA序列','er');return;}
+  if(seq.length<10){log('err','序列太短(至少10个残基)');toast('序列太短','er');return;}
+
+  const btn=document.getElementById('btn-run');
+  btn.disabled=true;btn.textContent='⏳ 预测中...';
+  showProg();setWF(1,'ok');setWF(2,'on');
+
+  updateStats();
+
+  setProg(5,'解析FASTA序列...');
+  log('info',`序列: ${header||'未命名'} | 长度: ${seq.length}aa`);
+
+  if(seq.length>400)log('warn',`序列较长(${seq.length}aa)，预测可能需要1-3分钟`);
+
+  setProg(10,'连接 ESMFold API...');
+  await delay(300);
+
+  showOv(`正在通过 ESMFold 预测三维结构...\n序列长度: ${seq.length} aa · 请稍候`);
+  setProg(20,'ESMFold 计算中...');
+  log('info','[ESMFold] 提交序列至 Meta AI ESMFold 服务器...');
+
+  try{
+    const resp=await fetch('https://api.esmatlas.com/foldSequence/v1/pdb/',{
+      method:'POST',headers:{'Content-Type':'text/plain'},body:seq
+    });
+    if(!resp.ok)throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
+    pdbData=await resp.text();
+    if(!pdbData||pdbData.length<100)throw new Error('返回数据异常');
+    log('ok','[ESMFold] 结构预测成功!');
+  }catch(e){
+    hideOv();
+    log('err',`[ESMFold] 预测失败: ${e.message}`);
+    log('warn','请检查网络连接或尝试更短的序列');
+    toast('ESMFold 预测失败，请检查网络','er');
+    btn.disabled=false;btn.textContent='🧬 预测蛋白质三维结构 (ESMFold)';
+    hideProg();setWF(2,'');setWF(1,'on');
+    return;
+  }
+
+  hideOv();
+  setProg(80,'加载三维结构...');
+  setWF(2,'ok');setWF(3,'on');
+
+  showPDB(pdbData,'ESMFold');
+
+  setProg(95,'分析结构信息...');
+  await delay(400);
+
+  setWF(3,'ok');setWF(4,'on');
+  document.getElementById('btn-dl').disabled=false;
+  setWF(4,'ok');
+
+  setProg(100,'完成!');
+  log('ok','═══ 结构预测完成! 可下载 PDB 文件 ═══');
+  toast('结构预测完成! 可以下载 PDB 文件了','ok');
+
+  btn.disabled=false;btn.textContent='🧬 重新预测';
+  setTimeout(hideProg,1500);
+}
+
+// ═══════════════ SHOW PDB ═══════════════
+function showPDB(pdb,src){
+  if(!viewer)initViewer();
+  document.getElementById('placeholder').style.display='none';
+  document.getElementById('vinfo').style.display='flex';
+
+  if(model!==null)viewer.removeModel(model);
+  viewer.removeAllSurfaces();viewer.removeAllLabels();
+  model=viewer.addModel(pdb,'pdb');
+  curStyle='cartoon';plddtMode=false;
+  applyStyle();
+  viewer.zoomTo();viewer.render();
+
+  // Parse info
+  const lines=pdb.split('\n');
+  let atoms=0;const res=new Set(),chains=new Set();
+  const bfactors=[];
+  lines.forEach(l=>{
+    if(l.startsWith('ATOM')){
+      atoms++;
+      const ch=l.charAt(21).trim();
+      chains.add(ch);
+      res.add(ch+l.substring(22,26).trim());
+      const bf=parseFloat(l.substring(60,66));
+      if(!isNaN(bf)&&l.substring(12,16).trim()==='CA')bfactors.push(bf);
+    }
+  });
+
+  const avgPlddt=bfactors.length?bfactors.reduce((a,b)=>a+b,0)/bfactors.length:0;
+
+  // Viewer info
+  document.getElementById('vi-at').textContent=atoms.toLocaleString();
+  document.getElementById('vi-res').textContent=res.size;
+  document.getElementById('vi-ch').textContent=chains.size;
+  document.getElementById('vi-src').textContent=src;
+  document.getElementById('vi-plddt').textContent=avgPlddt?avgPlddt.toFixed(1):'N/A';
+
+  // Right panel info
+  document.getElementById('ri-at').textContent=atoms.toLocaleString();
+  document.getElementById('ri-res').textContent=res.size;
+  document.getElementById('ri-ch').textContent=chains.size;
+  document.getElementById('ri-plddt').innerHTML=avgPlddt?`${avgPlddt.toFixed(1)}`:'N/A';
+  document.getElementById('ri-len').innerHTML=`${parsedSeq.length||res.size} <span class="u">aa</span>`;
+  document.getElementById('ri-mw').innerHTML=`${((parsedSeq.length||res.size)*0.11).toFixed(1)} <span class="u">kDa</span>`;
+
+  // Secondary structure estimate from pLDDT
+  if(bfactors.length){
+    let helix=0,sheet=0,coil=0,disor=0;
+    bfactors.forEach(b=>{
+      if(b>85)helix++;
+      else if(b>70)sheet++;
+      else if(b>50)coil++;
+      else disor++;
+    });
+    const tot=bfactors.length;
+    document.getElementById('ri-helix').textContent=(helix/tot*100).toFixed(1)+'%';
+    document.getElementById('ri-sheet').textContent=(sheet/tot*100).toFixed(1)+'%';
+    document.getElementById('ri-coil').textContent=(coil/tot*100).toFixed(1)+'%';
+    document.getElementById('ri-disor').textContent=(disor/tot*100).toFixed(1)+'%';
+  }
+
+  // pLDDT chart
+  drawPlddtChart(bfactors);
+  document.getElementById('btn-dl').disabled=false;
+}
+
+// ═══════════════ pLDDT CHART ═══════════════
+function drawPlddtChart(bfactors){
+  const canvas=document.getElementById('plddt-canvas');
+  const rect=canvas.parentElement.getBoundingClientRect();
+  canvas.width=rect.width*2;canvas.height=rect.height*2;
+  canvas.style.width=rect.width+'px';canvas.style.height=rect.height+'px';
+  const ctx=canvas.getContext('2d');
+  ctx.scale(2,2);
+  const W=rect.width,H=rect.height;
+  const pad={l:35,r:10,t:10,b:20};
+  const gw=W-pad.l-pad.r,gh=H-pad.t-pad.b;
+
+  // Background
+  ctx.fillStyle='#131a24';ctx.fillRect(0,0,W,H);
+
+  // Grid
+  ctx.strokeStyle='#1a2535';ctx.lineWidth=0.5;
+  for(let y=0;y<=100;y+=25){
+    const py=pad.t+gh-(y/100*gh);
+    ctx.beginPath();ctx.moveTo(pad.l,py);ctx.lineTo(pad.l+gw,py);ctx.stroke();
+    ctx.fillStyle='#4a5872';ctx.font='8px DM Mono';ctx.textAlign='right';
+    ctx.fillText(y,pad.l-4,py+3);
+  }
+
+  // Threshold zones
+  const zones=[
+    {min:90,max:100,color:'rgba(0,223,162,.08)'},
+    {min:70,max:90,color:'rgba(56,189,248,.06)'},
+    {min:50,max:70,color:'rgba(251,191,36,.05)'},
+    {min:0,max:50,color:'rgba(251,113,133,.04)'}
+  ];
+  zones.forEach(z=>{
+    const y1=pad.t+gh-(z.max/100*gh);
+    const y2=pad.t+gh-(z.min/100*gh);
+    ctx.fillStyle=z.color;ctx.fillRect(pad.l,y1,gw,y2-y1);
+  });
+
+  if(!bfactors.length)return;
+
+  // Plot
+  const n=bfactors.length;
+  const step=gw/Math.max(n-1,1);
+
+  ctx.beginPath();
+  for(let i=0;i<n;i++){
+    const x=pad.l+i*step;
+    const y=pad.t+gh-(bfactors[i]/100*gh);
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.strokeStyle='var(--mint)';ctx.lineWidth=1.2;ctx.stroke();
+
+  // Color dots
+  for(let i=0;i<n;i+=Math.max(1,Math.floor(n/80))){
+    const x=pad.l+i*step;
+    const y=pad.t+gh-(bfactors[i]/100*gh);
+    const b=bfactors[i];
+    ctx.fillStyle=b>90?'#00dfa2':b>70?'#38bdf8':b>50?'#fbbf24':'#fb7185';
+    ctx.beginPath();ctx.arc(x,y,2,0,Math.PI*2);ctx.fill();
+  }
+
+  // X label
+  ctx.fillStyle='#4a5872';ctx.font='8px DM Mono';ctx.textAlign='center';
+  ctx.fillText('1',pad.l,H-4);
+  ctx.fillText(n,pad.l+gw,H-4);
+  ctx.fillText(Math.round(n/2),pad.l+gw/2,H-4);
+}
+
+// ═══════════════ VIEWER CONTROLS ═══════════════
+function applyStyle(){
+  if(!viewer||model===null)return;
+  viewer.removeAllSurfaces();
+  const sel={model};
+  if(curStyle==='cartoon')viewer.setStyle(sel,{cartoon:{color:'#00dfa2',opacity:.92,thickness:.3}});
+  else if(curStyle==='stick')viewer.setStyle(sel,{stick:{colorscheme:{prop:'elem',map:{C:'#00dfa2',N:'#60a5fa',O:'#f87171',S:'#fbbf24'}},radius:.13}});
+  else if(curStyle==='sphere')viewer.setStyle(sel,{sphere:{color:'#00dfa2',opacity:.7}});
+  else if(curStyle==='line')viewer.setStyle(sel,{line:{color:'#00dfa2'}});
+  else if(curStyle==='surface'){
+    viewer.setStyle(sel,{cartoon:{color:'#00dfa2',opacity:.2}});
+    viewer.addSurface($3Dmol.SurfaceType.VDW,{opacity:.55,color:'#00dfa2'},sel);
+  }
+  viewer.render();
+}
+
+function setStyle(s,btn){
+  curStyle=s;plddtMode=false;
+  document.getElementById('plddt-leg').classList.remove('show');
+  document.querySelectorAll('.vtb .btn-icon').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  applyStyle();log('info',`渲染: ${s}`);
+}
+
+function colorPLDDT(){
+  if(!viewer||model===null)return;
+  plddtMode=!plddtMode;
+  document.getElementById('plddt-leg').classList.toggle('show',plddtMode);
+  document.getElementById('btn-plddt').classList.toggle('active',plddtMode);
+  if(plddtMode){
+    viewer.removeAllSurfaces();
+    const cf=a=>{const b=a.b;return b>90?'#00dfa2':b>70?'#38bdf8':b>50?'#fbbf24':'#fb7185'};
+    if(curStyle==='surface'){
+      viewer.setStyle({model},{cartoon:{colorfunc:cf,opacity:.2}});
+      viewer.addSurface($3Dmol.SurfaceType.VDW,{opacity:.55,colorfunc:cf},{model});
+    }else{
+      const st=curStyle==='stick'?{stick:{colorfunc:cf,radius:.13}}:
+               curStyle==='sphere'?{sphere:{colorfunc:cf,opacity:.7}}:
+               curStyle==='line'?{line:{colorfunc:cf}}:
+               {cartoon:{colorfunc:cf,thickness:.3}};
+      viewer.setStyle({model},st);
+    }
+  }else{applyStyle();}
+  viewer.render();
+  log('info',plddtMode?'pLDDT置信度着色已开启':'恢复默认着色');
+}
+
+function colorChain(){
+  if(!viewer||model===null)return;
+  plddtMode=false;
+  document.getElementById('plddt-leg').classList.remove('show');
+  viewer.removeAllSurfaces();
+  viewer.setStyle({model},{cartoon:{colorfunc:a=>{
+    const chains=['#00dfa2','#38bdf8','#a78bfa','#fbbf24','#fb7185','#f472b6'];
+    return chains[a.chain.charCodeAt(0)%chains.length];
+  },thickness:.3}});
+  viewer.render();log('info','按链着色');
+}
+
+function colorHydro(){
+  if(!viewer||model===null)return;
+  plddtMode=false;
+  document.getElementById('plddt-leg').classList.remove('show');
+  viewer.removeAllSurfaces();
+  const hydro='AILMFWVP';
+  viewer.setStyle({model},{cartoon:{colorfunc:a=>hydro.includes(a.resn?.charAt?.(0)||'')?'#fbbf24':'#38bdf8',thickness:.3}});
+  viewer.render();log('info','疏水性着色: 黄=疏水 蓝=亲水');
+  toast('黄色=疏水残基 蓝色=亲水残基','in');
+}
+
+function toggleLabels(){
+  labelsOn=!labelsOn;if(!viewer)return;
+  if(labelsOn)viewer.addResLabels({font:'DM Mono',fontSize:9,backgroundOpacity:.75,backgroundColor:'#131a24',fontColor:'#e2e8f0'});
+  else viewer.removeAllLabels();
+  viewer.render();
+}
+
+function resetView(){if(viewer){viewer.zoomTo();viewer.render()}}
+function toggleSpin(){spinning=!spinning;if(viewer)viewer.spin(spinning?'y':false)}
+function screenshot(){
+  if(!viewer)return;
+  const a=document.createElement('a');a.href=viewer.pngURI();
+  a.download=`liriodendron_structure_${Date.now()}.png`;a.click();
+  log('ok','截图已保存');toast('截图已保存','ok');
+}
+
+// ═══════════════ DOWNLOAD PDB ═══════════════
+function downloadPDB(){
+  if(!pdbData){toast('尚无PDB数据可下载','er');return;}
+  const name=parsedHeader?parsedHeader.split(/\s+/)[0]:'protein';
+  const blob=new Blob([pdbData],{type:'text/plain'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`${name}_ESMFold.pdb`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  log('ok',`PDB文件已下载: ${name}_ESMFold.pdb`);
+  toast('PDB 文件已下载!','ok');
+}
+
+// ═══════════════ UI HELPERS ═══════════════
+function rtab(el,id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  document.querySelectorAll('.rsec').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+}
+
+function setWF(n,state){document.getElementById(`ws${n}`).className=`wf-s ${state}`}
+function showProg(){document.getElementById('pw').style.display='block'}
+function hideProg(){document.getElementById('pw').style.display='none'}
+function setProg(p,t){
+  document.getElementById('pf').style.width=p+'%';
+  document.getElementById('pl').textContent=t;
+  document.getElementById('pp').textContent=p+'%';
+}
+function showOv(t){document.getElementById('ov-t').textContent=t;document.getElementById('ov').classList.add('on')}
+function hideOv(){document.getElementById('ov').classList.remove('on')}
+
+function log(type,msg){
+  const box=document.getElementById('logbox');
+  const t=new Date().toLocaleTimeString('zh-CN',{hour12:false});
+  box.innerHTML+=`<div class="le ${type}"><span class="lt">[${t}]</span><span class="lm">${msg}</span></div>`;
+  box.scrollTop=box.scrollHeight;
+}
+
+function toast(msg,type){
+  const t=document.getElementById('toast');
+  t.className=`toast t-${type==='ok'?'ok':type==='er'?'er':'in'}`;
+  t.textContent=msg;
+  setTimeout(()=>t.classList.add('show'),10);
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+function delay(ms){return new Promise(r=>setTimeout(r,ms))}
+</script>
+<script>
+(() => {
+  const translations = [
+    ["\u9e45\u638c\u6958\u86cb\u767d\u8d28\u7ed3\u6784\u9884\u6d4b\u5e73\u53f0 — ESMFold", "Liriodendron Protein Structure Prediction Platform — ESMFold"],
+    ["\u9e45\u638c\u6958\u86cb\u767d\u8d28\u7ed3\u6784\u9884\u6d4b", "Liriodendron Protein Structure Prediction"],
+    ["\u9e45\u638c\u6958\u793a\u4f8b\u86cb\u767d", "Liriodendron Example Proteins"],
+    ["\u5de5\u4f5c\u6d41\u7a0b", "Workflow"],
+    ["\u8f93\u5165\u5e8f\u5217", "Input Sequence"],
+    ["\u7ed3\u6784\u9884\u6d4b", "Structure Prediction"],
+    ["3D\u53ef\u89c6\u5316", "3D Visualization"],
+    ["\u4e0b\u8f7dPDB", "Download PDB"],
+    ["FASTA \u5e8f\u5217\u8f93\u5165", "FASTA Sequence Input"],
+    ["\u7c98\u8d34\u6c28\u57fa\u9178\u5e8f\u5217\uff08FASTA\u683c\u5f0f\u6216\u7eaf\u5e8f\u5217\uff09", "Paste an amino acid sequence (FASTA or raw sequence)"],
+    ["\u26a0\ufe0f ESMFold \u5efa\u8bae\u5e8f\u5217\u957f\u5ea6 \u2264 400 aa\uff08\u66f4\u957f\u5e8f\u5217\u53ef\u80fd\u9700\u8981\u8f83\u957f\u65f6\u95f4\uff09", "\u26a0\ufe0f ESMFold recommends sequences \u2264 400 aa (longer sequences may take more time)"],
+    ["\u652f\u6301\u6807\u51c620\u79cd\u6c28\u57fa\u9178\u5355\u5b57\u6bcd\u7f16\u7801\uff0c\u81ea\u52a8\u5ffd\u7565\u7a7a\u683c\u548c\u6570\u5b57", "Standard 20 amino-acid one-letter codes are supported; spaces and numbers are ignored automatically"],
+    ["\u6216\u4e0a\u4f20\u6587\u4ef6", "Or upload a file"],
+    ["\u70b9\u51fb\u9009\u62e9 .fasta / .fa / .txt / .pdb \u6587\u4ef6", "Click to select a .fasta / .fa / .txt / .pdb file"],
+    ["\u6b8b\u57fa\u6570", "Residue count"],
+    ["\u70b9\u51fb\u5feb\u901f\u52a0\u8f7d · Liriodendron chinense \u86cb\u767d\u8d28\u5e8f\u5217", "Click to load quickly · Liriodendron chinense protein sequences"],
+    ["\u70ed\u6fc0\u86cb\u767d\u8d2890", "Heat shock protein 90"],
+    ["\u8d85\u6c27\u5316\u7269\u6b67\u5316\u9176", "Superoxide dismutase"],
+    ["MYB\u8f6c\u5f55\u56e0\u5b50", "MYB transcription factor"],
+    ["WRKY\u8f6c\u5f55\u56e0\u5b50", "WRKY transcription factor"],
+    ["NAC\u8f6c\u5f55\u56e0\u5b50", "NAC transcription factor"],
+    ["\u82ef\u4e19\u6c28\u9178\u89e3\u6c28\u9176", "Phenylalanine ammonia-lyase"],
+    ["4-\u9999\u8c46\u9178\u8f85\u9176A\u8fde\u63a5\u9176", "4-coumarate-CoA ligase"],
+    ["\u67e5\u5c14\u916e\u5408\u9176", "Chalcone synthase"],
+    ["\u6297\u574f\u8840\u9178\u8fc7\u6c27\u5316\u7269\u9176", "Ascorbate peroxidase"],
+    ["\ud83e\uddec \u9884\u6d4b\u86cb\u767d\u8d28\u4e09\u7ef4\u7ed3\u6784 (ESMFold)", "\ud83e\uddec Predict 3D protein structure (ESMFold)"],
+    ["\ud83d\udcbe \u4e0b\u8f7d PDB \u7ed3\u6784\u6587\u4ef6", "\ud83d\udcbe Download PDB structure file"],
+    ["\u51c6\u5907\u4e2d...", "Preparing..."],
+    ["\u5361\u901a", "Cartoon"], ["\u68d2\u72b6", "Sticks"], ["\u7403\u72b6", "Spheres"], ["\u5206\u5b50\u8868\u9762", "Molecular surface"], ["\u7ebf\u72b6", "Lines"],
+    ["pLDDT\u7740\u8272", "Color by pLDDT"], ["\u6309\u94fe\u7740\u8272", "Color by chain"], ["\u758f\u6c34\u6027\u7740\u8272", "Color by hydrophobicity"], ["\u6b8b\u57fa\u6807\u7b7e", "Residue labels"],
+    ["\u81ea\u52a8\u65cb\u8f6c", "Auto-spin"], ["\u91cd\u7f6e\u89c6\u89d2", "Reset view"], ["\u622a\u56fe\u4fdd\u5b58", "Save screenshot"],
+    ["\u8f93\u5165 FASTA \u5e8f\u5217 \u2192 \u9884\u6d4b\u86cb\u767d\u8d28\u4e09\u7ef4\u7ed3\u6784", "Enter a FASTA sequence \u2192 predict a 3D protein structure"],
+    ["\u7531 ESMFold \u63d0\u4f9b\u7ed3\u6784\u9884\u6d4b · 3Dmol.js \u63d0\u4f9b\u53ef\u89c6\u5316", "Structure prediction by ESMFold · visualization by 3Dmol.js"],
+    ["\u539f\u5b50\u6570", "Atom count"], ["\u6b8b\u57fa\u6570", "Residue count"], ["\u94fe\u6570", "Chain count"], ["\u6765\u6e90", "Source"], ["\u5e73\u5747pLDDT", "Mean pLDDT"],
+    ["pLDDT \u7f6e\u4fe1\u5ea6", "pLDDT confidence"], ["\u5f88\u9ad8 (>90)", "Very high (>90)"], ["\u9ad8 (70\u201390)", "High (70\u201390)"], ["\u4f4e (50\u201370)", "Low (50\u201370)"], ["\u5f88\u4f4e (<50)", "Very low (<50)"],
+    ["\u6b63\u5728\u901a\u8fc7 ESMFold \u9884\u6d4b\u86cb\u767d\u8d28\u4e09\u7ef4\u7ed3\u6784...", "Predicting the 3D protein structure with ESMFold..."],
+    ["\u7ed3\u6784\u4fe1\u606f", "Structure information"], ["\u5e8f\u5217\u5206\u6790", "Sequence analysis"], ["\u8fd0\u884c\u65e5\u5fd7", "Run log"], ["\u7ed3\u6784\u6982\u89c8", "Structure overview"],
+    ["\u539f\u5b50\u6570", "Atom count"], ["\u6b8b\u57fa\u6570", "Residue count"], ["\u94fe\u6570", "Chain count"], ["\u5e8f\u5217\u957f\u5ea6", "Sequence length"], ["\u4f30\u7b97\u5206\u5b50\u91cf", "Estimated molecular weight"],
+    ["pLDDT \u5206\u5e03", "pLDDT distribution"], ["X\u8f74: \u6b8b\u57fa\u4f4d\u7f6e", "X-axis: residue position"], ["Y\u8f74: pLDDT \u7f6e\u4fe1\u5ea6 (0\u2013100)", "Y-axis: pLDDT confidence (0\u2013100)"],
+    ["\u4e8c\u7ea7\u7ed3\u6784\u7edf\u8ba1", "Secondary structure statistics"], ["\u03b1-\u87ba\u65cb", "\u03b1-helix"], ["\u03b2-\u6298\u53e0", "\u03b2-sheet"], ["\u73af\u533a/\u5377\u66f2", "Loops/coils"], ["\u65e0\u5e8f\u533a", "Disordered region"],
+    ["\u5e8f\u5217\u53ef\u89c6\u5316", "Sequence visualization"], ["\u8f93\u5165\u5e8f\u5217\u540e\u663e\u793a", "Shown after entering a sequence"], ["\u6c28\u57fa\u9178\u7ec4\u6210", "Amino-acid composition"],
+    ["[\u7cfb\u7edf]", "[System]"], ["\u5e73\u53f0\u5c31\u7eea — \u8f93\u5165FASTA\u5e8f\u5217\u6216\u70b9\u51fb\u793a\u4f8b\u5f00\u59cb", "Platform ready — enter a FASTA sequence or click an example to begin"],
+    ["PDB\u6587\u4ef6\u5df2\u52a0\u8f7d:", "PDB file loaded:"], ["PDB\u7ed3\u6784\u5df2\u52a0\u8f7d", "PDB structure loaded"], ["FASTA\u6587\u4ef6\u5df2\u52a0\u8f7d:", "FASTA file loaded:"], ["\u5df2\u52a0\u8f7d\u793a\u4f8b:", "Example loaded:"],
+    ["\u8bf7\u8f93\u5165FASTA\u5e8f\u5217", "Please enter a FASTA sequence"], ["\u5e8f\u5217\u592a\u77ed(\u81f3\u5c1110\u4e2a\u6b8b\u57fa)", "Sequence too short (at least 10 residues)"],
+    ["\u23f3 \u9884\u6d4b\u4e2d...", "\u23f3 Predicting..."], ["\u89e3\u6790FASTA\u5e8f\u5217...", "Parsing FASTA sequence..."], ["\u672a\u547d\u540d", "Unnamed"], ["\u5e8f\u5217\u8f83\u957f", "Sequence is long"],
+    ["\u8fde\u63a5 ESMFold API...", "Connecting to the ESMFold API..."], ["ESMFold \u8ba1\u7b97\u4e2d...", "ESMFold is calculating..."], ["\u63d0\u4ea4\u5e8f\u5217\u81f3 Meta AI ESMFold \u670d\u52a1\u5668...", "Submitting the sequence to the Meta AI ESMFold server..."],
+    ["\u7ed3\u6784\u9884\u6d4b\u6210\u529f!", "Structure prediction succeeded!"], ["\u8fd4\u56de\u6570\u636e\u5f02\u5e38", "Unexpected response data"], ["\u9884\u6d4b\u5931\u8d25:", "Prediction failed:"],
+    ["\u8bf7\u68c0\u67e5\u7f51\u7edc\u8fde\u63a5\u6216\u5c1d\u8bd5\u66f4\u77ed\u7684\u5e8f\u5217", "Check the network connection or try a shorter sequence"],
+    ["ESMFold \u9884\u6d4b\u5931\u8d25\uff0c\u8bf7\u68c0\u67e5\u7f51\u7edc", "ESMFold prediction failed; check the network"], ["\u52a0\u8f7d\u4e09\u7ef4\u7ed3\u6784...", "Loading the 3D structure..."],
+    ["\u5206\u6790\u7ed3\u6784\u4fe1\u606f...", "Analyzing structure information..."], ["\u5b8c\u6210!", "Complete!"], ["\u7ed3\u6784\u9884\u6d4b\u5b8c\u6210! \u53ef\u4e0b\u8f7d PDB \u6587\u4ef6", "Structure prediction complete! The PDB file is ready to download"],
+    ["\u7ed3\u6784\u9884\u6d4b\u5b8c\u6210! \u53ef\u4ee5\u4e0b\u8f7d PDB \u6587\u4ef6\u4e86", "Structure prediction complete! You can download the PDB file"],
+    ["\u91cd\u65b0\u9884\u6d4b", "Predict again"], ["pLDDT\u7f6e\u4fe1\u5ea6\u7740\u8272\u5df2\u5f00\u542f", "pLDDT confidence coloring enabled"], ["\u6062\u590d\u9ed8\u8ba4\u7740\u8272", "Default coloring restored"],
+    ["\u758f\u6c34\u6027\u7740\u8272: \u9ec4=\u758f\u6c34 \u84dd=\u4eb2\u6c34", "Hydrophobicity coloring: yellow = hydrophobic, blue = hydrophilic"],
+    ["\u9ec4\u8272=\u758f\u6c34\u6b8b\u57fa \u84dd\u8272=\u4eb2\u6c34\u6b8b\u57fa", "Yellow = hydrophobic residues; blue = hydrophilic residues"],
+    ["\u622a\u56fe\u5df2\u4fdd\u5b58", "Screenshot saved"], ["\u5c1a\u65e0PDB\u6570\u636e\u53ef\u4e0b\u8f7d", "No PDB data available for download"],
+    ["PDB\u6587\u4ef6\u5df2\u4e0b\u8f7d:", "PDB file downloaded:"], ["PDB \u6587\u4ef6\u5df2\u4e0b\u8f7d!", "PDB file downloaded!"],
+    ["\u7ed3\u6784", "Structure"], ["\u5e8f\u5217", "Sequence"], ["\u8f93\u5165", "Enter"], ["\u6587\u4ef6", "file"], ["\u4e0b\u8f7d", "Download"], ["\u52a0\u8f7d", "Load"], ["\u5b8c\u6210", "Complete"],
+  ].sort((a, b) => b[0].length - a[0].length);
+
+  const translate = value => {
+    let result = String(value ?? "");
+    for (const [source, target] of translations) result = result.split(source).join(target);
+    return result.replace(/[\u3400-\u9fff]/g, "");
+  };
+
+  const translateNode = node => {
+    if (!node) return;
+    if (node.nodeType === Node.TEXT_NODE) {
+      const next = translate(node.nodeValue);
+      if (next !== node.nodeValue) node.nodeValue = next;
+      return;
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE || node.tagName === "SCRIPT" || node.tagName === "STYLE") return;
+    for (const attribute of ["aria-label", "title", "placeholder", "alt"]) {
+      if (node.hasAttribute(attribute)) node.setAttribute(attribute, translate(node.getAttribute(attribute)));
+    }
+    node.childNodes.forEach(translateNode);
+  };
+
+  document.documentElement.lang = "en";
+  document.title = "Liriodendron Protein Structure Prediction Platform — ESMFold";
+  const nativeAlert = window.alert.bind(window);
+  window.alert = message => nativeAlert(translate(message));
+  translateNode(document.body);
+  new MutationObserver(records => records.forEach(record => {
+    if (record.type === "characterData" || record.type === "attributes") translateNode(record.target);
+    else record.addedNodes.forEach(translateNode);
+  })).observe(document.body, {
+    subtree: true,
+    childList: true,
+    characterData: true,
+    attributes: true,
+    attributeFilter: ["aria-label", "title", "placeholder", "alt"]
+  });
+})();
+</script>
+</body>
+</html>

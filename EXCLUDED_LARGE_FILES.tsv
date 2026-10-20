@@ -1,0 +1,7 @@
+﻿"Path"	"SizeMB"	"Reason"
+"comparative_genomics\syri.vcf"	"1254.4"	"超过 GitHub 单文件限制，比较基因组原始 VCF"
+"中国鹅掌楸参考基因组\Liriodendronchinense_Genome.fasta"	"1689.5"	"超过 GitHub 单文件限制，参考基因组 FASTA"
+"北美鹅掌楸参考基因组\LtulipiferaYP108A_766_v1.0.fa"	"1445.91"	"超过 GitHub 单文件限制，参考基因组 FASTA"
+"基因结构可视化软件\LtulipiferaYP108A_766_v1.1.gene_exons.gff3"	"91.91"	"网页上传安全版排除，建议用 Git LFS 或外部下载"
+"北美鹅掌楸参考基因组\LtulipiferaYP108A_766_v1.1.cds.fa"	"75.93"	"网页上传安全版排除，建议用 Git LFS 或外部下载"
+"中国鹅掌楸参考基因组\Liriodendron_cds.fasta"	"43.84"	"网页上传安全版排除，建议用 Git LFS 或外部下载"

@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Proteomics and metabolomics resources within the unified LMDB Omics Data catalog for Liriodendron species and hybrids.">
+  <title>Omics Data: Proteomics &amp; Metabolomics | LMDB</title>
+  <style>
+    :root {
+      --ink: #17332a;
+      --muted: #5d716a;
+      --line: #dce8e2;
+      --surface: #ffffff;
+      --surface-soft: #f5faf7;
+      --green: #126b50;
+      --green-dark: #0d503d;
+      --green-soft: #e5f5ed;
+      --purple: #76549d;
+      --purple-soft: #f0eafb;
+      --amber: #95610c;
+      --amber-soft: #fff4d8;
+      --shadow: 0 18px 50px rgba(22, 70, 53, 0.10);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 0%, rgba(78, 168, 122, 0.15), transparent 28rem),
+        radial-gradient(circle at 92% 14%, rgba(118, 84, 157, 0.12), transparent 25rem),
+        #f7faf8;
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    a { color: inherit; }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid rgba(220, 232, 226, 0.9);
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(18px);
+    }
+
+    .topbar-inner,
+    main,
+    .footer-inner {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .topbar-inner {
+      min-height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      font-weight: 760;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      color: white;
+      background: linear-gradient(135deg, var(--green), #2a8a66);
+      box-shadow: 0 8px 20px rgba(18, 107, 80, 0.22);
+      font-size: 18px;
+    }
+
+    .top-actions { display: flex; align-items: center; gap: 10px; }
+    .top-link,
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px 13px;
+      color: var(--ink);
+      background: white;
+      text-decoration: none;
+      font-weight: 650;
+      font-size: 14px;
+      transition: 160ms ease;
+    }
+
+    .top-link:hover,
+    .button:hover { border-color: #a9c7b8; transform: translateY(-1px); }
+    .button.primary { color: white; border-color: var(--green); background: var(--green); }
+    .button.primary:hover { background: var(--green-dark); }
+    .button.small { min-height: 34px; padding: 6px 10px; font-size: 12px; border-radius: 8px; }
+
+    main { padding: 42px 0 72px; }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(30px, 6vw, 62px);
+      border: 1px solid #d5e5dd;
+      border-radius: 28px;
+      color: white;
+      background:
+        linear-gradient(120deg, rgba(8, 61, 44, 0.96), rgba(18, 107, 80, 0.92)),
+        url('assets/chinese-tulip-tree-flower-profile.jpg') center 48% / cover;
+      box-shadow: var(--shadow);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -100px;
+      bottom: -130px;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      border: 80px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      padding: 6px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.10);
+      font-size: 12px;
+      font-weight: 760;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .hero h1 {
+      position: relative;
+      z-index: 1;
+      max-width: 830px;
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(34px, 6vw, 64px);
+      line-height: 1.02;
+      letter-spacing: -0.045em;
+    }
+
+    .hero p {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      margin: 22px 0 0;
+      color: rgba(255, 255, 255, 0.83);
+      font-size: clamp(15px, 2vw, 18px);
+    }
+
+    .hero-actions {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .hero-actions .button { border-color: rgba(255, 255, 255, 0.25); }
+    .hero-actions .button:not(.primary) { background: rgba(255, 255, 255, 0.10); color: white; }
+    .hero-actions .button.primary { color: var(--green-dark); background: white; border-color: white; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 12px;
+      margin: 20px 0 0;
+    }
+
+    .stat {
+      min-height: 105px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: 0 8px 24px rgba(22, 70, 53, 0.05);
+    }
+
+    .stat strong { display: block; font-size: 27px; line-height: 1.1; color: var(--green-dark); }
+    .stat span { display: block; margin-top: 7px; color: var(--muted); font-size: 12px; }
+
+    .section { margin-top: 58px; scroll-margin-top: 92px; }
+    .section-heading {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 20px;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(28px, 4vw, 42px);
+      letter-spacing: -0.03em;
+    }
+
+    .section-heading p { max-width: 620px; margin: 6px 0 0; color: var(--muted); }
+    .result-count { flex: 0 0 auto; color: var(--muted); font-size: 13px; font-weight: 700; }
+
+    .filter-panel {
+      display: grid;
+      grid-template-columns: 2fr repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .field label { display: block; margin-bottom: 6px; color: var(--muted); font-size: 11px; font-weight: 780; text-transform: uppercase; letter-spacing: 0.07em; }
+    .field input,
+    .field select {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid #cadbd2;
+      border-radius: 10px;
+      padding: 8px 11px;
+      color: var(--ink);
+      outline: none;
+      background: white;
+    }
+
+    .field input:focus,
+    .field select:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(18, 107, 80, 0.10); }
+
+    .dataset-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .dataset-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--surface);
+      box-shadow: 0 10px 28px rgba(22, 70, 53, 0.06);
+      overflow: hidden;
+    }
+
+    .dataset-card.proteomics { border-top: 4px solid var(--purple); }
+    .dataset-card.metabolomics { border-top: 4px solid var(--green); }
+    .card-body { padding: 20px 20px 16px; }
+    .badge-row { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 780;
+      background: var(--green-soft);
+      color: var(--green-dark);
+    }
+
+    .badge.proteomics { color: #5a347e; background: var(--purple-soft); }
+    .badge.publication-only { color: var(--amber); background: var(--amber-soft); }
+    .badge.processed-public { color: #315f83; background: #e7f2fb; }
+    .dataset-card h3 { margin: 0; font-size: 20px; line-height: 1.25; letter-spacing: -0.02em; }
+    .title-zh { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
+    .description { margin: 15px 0; color: #415b51; font-size: 14px; }
+    .meta-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
+    .meta {
+      padding: 9px 10px;
+      border-radius: 10px;
+      background: var(--surface-soft);
+      min-width: 0;
+    }
+
+    .meta span { display: block; color: var(--muted); font-size: 10px; font-weight: 780; text-transform: uppercase; letter-spacing: 0.06em; }
+    .meta strong { display: block; margin-top: 2px; font-size: 12px; overflow-wrap: anywhere; }
+    .species-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+    .species-chip { padding: 4px 8px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: 11px; font-style: italic; background: white; }
+
+    .downloads {
+      margin-top: auto;
+      border-top: 1px solid var(--line);
+      background: #fbfdfc;
+    }
+
+    .downloads summary {
+      padding: 14px 20px;
+      color: var(--green-dark);
+      font-size: 13px;
+      font-weight: 780;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .downloads summary::-webkit-details-marker { display: none; }
+    .downloads summary::after { content: "+"; float: right; font-size: 18px; line-height: 1; }
+    .downloads[open] summary::after { content: "−"; }
+    .download-links { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 20px 18px; }
+    .download-links a { max-width: 100%; overflow-wrap: anywhere; }
+
+    .empty {
+      grid-column: 1 / -1;
+      padding: 48px 20px;
+      border: 1px dashed #b8cec3;
+      border-radius: 16px;
+      text-align: center;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .file-panel {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: white;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .file-toolbar {
+      display: grid;
+      grid-template-columns: 1.6fr repeat(3, 1fr);
+      gap: 12px;
+      padding: 18px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface-soft);
+    }
+
+    .file-actions { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 12px 14px; border-bottom: 1px solid #e8efeb; text-align: left; vertical-align: top; }
+    th { color: var(--muted); background: #fbfdfc; font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; }
+    td.file-name { min-width: 260px; font-weight: 670; overflow-wrap: anywhere; }
+    td.actions { white-space: nowrap; }
+    .text-button { border: 0; padding: 0; color: var(--green); background: transparent; font-size: 12px; font-weight: 720; }
+    .text-button + .text-button { margin-left: 10px; }
+    .file-note { padding: 14px 18px; color: var(--muted); background: #fffaf0; font-size: 12px; }
+
+    .notes-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 16px; }
+    .note-card { padding: 22px; border: 1px solid var(--line); border-radius: 18px; background: white; }
+    .note-card h3 { margin: 0 0 10px; font-size: 18px; }
+    .note-card p, .note-card li { color: var(--muted); font-size: 14px; }
+    .note-card ul { margin: 0; padding-left: 19px; }
+    .note-card li + li { margin-top: 8px; }
+    .method-copy { padding: 14px; border-left: 4px solid var(--green); border-radius: 8px; background: var(--surface-soft); color: #365047; font-size: 13px; }
+
+    footer { border-top: 1px solid var(--line); background: white; }
+    .footer-inner { display: flex; justify-content: space-between; gap: 18px; padding: 28px 0; color: var(--muted); font-size: 12px; }
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 40;
+      padding: 11px 14px;
+      border-radius: 10px;
+      color: white;
+      background: var(--green-dark);
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: 180ms ease;
+      font-size: 13px;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 980px) {
+      .stats { grid-template-columns: repeat(3, 1fr); }
+      .filter-panel, .file-toolbar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 720px) {
+      .topbar-inner { min-height: 62px; }
+      .brand-copy { display: none; }
+      .top-actions .top-link:first-child { display: none; }
+      main { padding-top: 22px; }
+      .hero { border-radius: 20px; padding: 28px 22px; }
+      .hero h1 { font-size: 38px; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .dataset-grid, .notes-grid { grid-template-columns: 1fr; }
+      .filter-panel, .file-toolbar { grid-template-columns: 1fr; }
+      .section-heading { align-items: flex-start; flex-direction: column; gap: 8px; }
+      .meta-grid { grid-template-columns: 1fr; }
+      .footer-inner { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html?tab=datasets">
+        <span class="brand-mark" aria-hidden="true">LM</span>
+        <span class="brand-copy">Liriodendron Multi-omics Database</span>
+      </a>
+      <div class="top-actions">
+        <a class="top-link" href="#dataset-catalog">Dataset catalog</a>
+        <a class="top-link" href="#file-browser">File browser</a>
+        <a class="button primary" href="index.html?tab=datasets">Back to Omics Data</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow">Omics Data · Curated public resources · 2026.08</div>
+      <h1>Proteomics &amp;<br>Metabolomics</h1>
+      <p>
+        A curated, species-aware index of public Liriodendron protein and metabolite studies,
+        including MassIVE raw/converted spectra, processed identification tables, supplementary
+        datasets and publication-level records.
+      </p>
+      <div class="hero-actions">
+        <a class="button primary" href="#dataset-catalog">Explore studies</a>
+        <a class="button" href="#file-browser">Browse 79 mass-spectrometry files</a>
+        <a class="button" href="data/omics/鹅掌楸公开蛋白质组与代谢组下载清单.md">Chinese download guide</a>
+      </div>
+    </section>
+
+    <section class="stats" id="stats" aria-label="Catalog summary"></section>
+
+    <section class="section" id="dataset-catalog">
+      <div class="section-heading">
+        <div>
+          <h2>Curated study catalog</h2>
+          <p>Filter by omics layer, taxon and public-data level. Cross-taxon studies appear once and retain all associated species.</p>
+        </div>
+        <span class="result-count" id="datasetCount"></span>
+      </div>
+
+      <div class="filter-panel">
+        <div class="field">
+          <label for="datasetSearch">Search</label>
+          <input id="datasetSearch" type="search" placeholder="Title, accession, method, tissue…">
+        </div>
+        <div class="field">
+          <label for="omicsFilter">Omics layer</label>
+          <select id="omicsFilter">
+            <option value="all">All omics</option>
+            <option value="proteomics">Proteomics</option>
+            <option value="metabolomics">Metabolomics</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="speciesFilter">Species / material</label>
+          <select id="speciesFilter">
+            <option value="all">All taxa</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="availabilityFilter">Public-data level</label>
+          <select id="availabilityFilter">
+            <option value="all">All levels</option>
+            <option value="raw-public">Raw / converted spectra</option>
+            <option value="processed-public">Processed public data</option>
+            <option value="publication-only">Publication only</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="dataset-grid" id="datasetGrid"></div>
+    </section>
+
+    <section class="section" id="file-browser">
+      <div class="section-heading">
+        <div>
+          <h2>MassIVE file browser</h2>
+          <p>File-level links are restricted to Liriodendron-labelled samples and their matched blank, pooled-QC or identification files.</p>
+        </div>
+        <span class="result-count" id="fileCount"></span>
+      </div>
+
+      <div class="file-panel">
+        <div class="file-toolbar">
+          <div class="field">
+            <label for="fileSearch">File search</label>
+            <input id="fileSearch" type="search" placeholder="LITU, Chin, QC, Blank…">
+          </div>
+          <div class="field">
+            <label for="projectFilter">MassIVE project</label>
+            <select id="projectFilter"><option value="all">All projects</option></select>
+          </div>
+          <div class="field">
+            <label for="formatFilter">File format</label>
+            <select id="formatFilter">
+              <option value="all">All formats</option>
+              <option value="mzML">mzML</option>
+              <option value="mzXML">mzXML</option>
+              <option value="raw">Vendor RAW</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="roleFilter">File role</label>
+            <select id="roleFilter">
+              <option value="all">All roles</option>
+              <option value="biological_sample">Biological sample</option>
+              <option value="quality_control">Pooled QC</option>
+              <option value="identification_pool">Identification pool</option>
+              <option value="blank">Blank</option>
+            </select>
+          </div>
+        </div>
+        <div class="file-actions">
+          <button class="button small" id="downloadTsv" type="button">Download filtered TSV</button>
+          <button class="button small" id="downloadJson" type="button">Download full catalog JSON</button>
+          <button class="button small" id="resetFiles" type="button">Reset file filters</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Project</th>
+                <th>File</th>
+                <th>Format</th>
+                <th>Role</th>
+                <th>Species scope</th>
+                <th>Size</th>
+                <th>Link</th>
+              </tr>
+            </thead>
+            <tbody id="fileRows"></tbody>
+          </table>
+        </div>
+        <div class="file-note">
+          FTP note: some modern browsers do not open <strong>ftp://</strong> links. Copy the URL into FileZilla, WinSCP or another FTPES-capable client. Host: massive-ftp.ucsd.edu · Port: 21 · Login: anonymous.
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="curation-notes">
+      <div class="section-heading">
+        <div>
+          <h2>Curation and reuse notes</h2>
+          <p>The catalog distinguishes raw spectra, processed public tables and publication-only evidence so users can select data appropriate for reanalysis.</p>
+        </div>
+      </div>
+      <div class="notes-grid">
+        <article class="note-card">
+          <h3>Scope and quality control</h3>
+          <ul id="curationNotes"></ul>
+        </article>
+        <article class="note-card">
+          <h3>Database methods statement</h3>
+          <p class="method-copy">
+            Publicly available Liriodendron proteomics and metabolomics resources were manually curated from MassIVE/GNPS and article-associated repositories. Records were standardized by species, tissue, analytical platform, data level and accession. For mixed-species MassIVE projects, only Liriodendron-labelled spectra and the corresponding blank, pooled quality-control and identification files were retained in the file-level index.
+          </p>
+          <p><strong>Catalog version:</strong> <span id="catalogVersion"></span><br><strong>Curated:</strong> <span id="curationDate"></span></p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <span>LMDB · Liriodendron Multi-omics Database</span>
+      <span>Public links remain subject to the source repository's availability and license.</span>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="data/omics/omics_catalog.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      const catalog = window.LMDB_OMICS_CATALOG;
+      if (!catalog) {
+        document.body.innerHTML = '<p style="padding:2rem;font-family:sans-serif">The omics catalog could not be loaded.</p>';
+        return;
+      }
+
+      const availabilityLabels = {
+        'raw-public': 'Raw / converted spectra',
+        'processed-public': 'Processed public data',
+        'publication-only': 'Publication only'
+      };
+      const roleLabels = {
+        biological_sample: 'Biological sample',
+        quality_control: 'Pooled QC',
+        identification_pool: 'Identification pool',
+        blank: 'Blank'
+      };
+      const speciesScopeLabels = {
+        chinense: 'L. chinense',
+        tulipifera: 'L. tulipifera',
+        mixed_qc: 'Mixed LITU QC',
+        blank: 'Blank'
+      };
+
+      const datasetState = { search: '', omics: 'all', species: 'all', availability: 'all' };
+      const fileState = { search: '', project: 'all', format: 'all', role: 'all' };
+      let currentFiles = catalog.files.slice();
+
+      const byId = id => document.getElementById(id);
+      const escapeHtml = value => String(value == null ? '' : value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+
+      function statCard(value, label) {
+        return `<div class="stat"><strong>${escapeHtml(value)}</strong><span>${escapeHtml(label)}</span></div>`;
+      }
+
+      function renderStats() {
+        const summary = catalog.summary;
+        byId('stats').innerHTML = [
+          statCard(summary.curatedStudies, 'Curated studies'),
+          statCard(summary.proteomicsStudies, 'Proteomics studies'),
+          statCard(summary.metabolomicsStudies, 'Metabolomics studies'),
+          statCard(summary.rawDatasets, 'MassIVE raw projects'),
+          statCard(summary.rawFileLinks, 'File-level links'),
+          statCard(summary.rawDataSize, 'Indexed spectra volume')
+        ].join('');
+      }
+
+      function populateFilters() {
+        const speciesFilter = byId('speciesFilter');
+        Object.entries(catalog.species).forEach(([id, item]) => {
+          const option = document.createElement('option');
+          option.value = id;
+          option.textContent = `${item.shortName} · ${item.labelZh}`;
+          speciesFilter.appendChild(option);
+        });
+
+        const projectFilter = byId('projectFilter');
+        [...new Set(catalog.files.map(item => item.accession))].forEach(accession => {
+          const option = document.createElement('option');
+          option.value = accession.toLowerCase();
+          option.textContent = accession;
+          projectFilter.appendChild(option);
+        });
+      }
+
+      function searchableDatasetText(dataset) {
+        const speciesText = (dataset.speciesIds || []).map(id => {
+          const item = catalog.species[id];
+          return item ? `${item.name} ${item.shortName} ${item.labelZh}` : id;
+        }).join(' ');
+        return [
+          dataset.title,
+          dataset.titleZh,
+          dataset.accession,
+          dataset.source,
+          dataset.description,
+          dataset.technique,
+          dataset.sampleType,
+          dataset.dataLevel,
+          speciesText
+        ].join(' ').toLowerCase();
+      }
+
+      function filteredDatasets() {
+        return catalog.datasets.filter(dataset => {
+          if (datasetState.omics !== 'all' && dataset.omicsType !== datasetState.omics) return false;
+          if (datasetState.species !== 'all' && !(dataset.speciesIds || []).includes(datasetState.species)) return false;
+          if (datasetState.availability !== 'all' && dataset.availability !== datasetState.availability) return false;
+          if (datasetState.search && !searchableDatasetText(dataset).includes(datasetState.search)) return false;
+          return true;
+        });
+      }
+
+      function renderDatasetCard(dataset) {
+        const speciesChips = (dataset.speciesIds || []).map(id => {
+          const item = catalog.species[id];
+          return `<span class="species-chip">${escapeHtml(item ? item.shortName : id)}</span>`;
+        }).join('');
+        const downloadLinks = (dataset.downloads || []).map(item => {
+          const isFtp = item.url.startsWith('ftp://');
+          const label = isFtp ? `${item.name} ↗` : item.name;
+          return `<a class="button small" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`;
+        });
+        if (dataset.fileCount) {
+          downloadLinks.unshift(`<button class="button small primary" type="button" data-browse-dataset="${escapeHtml(dataset.accession.toLowerCase())}">Browse ${escapeHtml(dataset.fileCount)} curated files</button>`);
+        }
+
+        const meta = [
+          ['Accession', dataset.accession || '—'],
+          ['Year / source', `${dataset.year || '—'} · ${dataset.source || '—'}`],
+          ['Method', dataset.technique || dataset.type || '—'],
+          ['Material', dataset.sampleType || '—']
+        ];
+
+        return `
+          <article class="dataset-card ${escapeHtml(dataset.omicsType)}">
+            <div class="card-body">
+              <div class="badge-row">
+                <span class="badge ${escapeHtml(dataset.omicsType)}">${escapeHtml(dataset.omicsType)}</span>
+                <span class="badge ${escapeHtml(dataset.availability)}">${escapeHtml(availabilityLabels[dataset.availability] || dataset.availability)}</span>
+                ${dataset.size ? `<span class="badge">${escapeHtml(dataset.size)}</span>` : ''}
+              </div>
+              <h3>${escapeHtml(dataset.title)}</h3>
+              <p class="title-zh">${escapeHtml(dataset.titleZh || '')}</p>
+              <p class="description">${escapeHtml(dataset.description || '')}</p>
+              <div class="meta-grid">
+                ${meta.map(item => `<div class="meta"><span>${escapeHtml(item[0])}</span><strong>${escapeHtml(item[1])}</strong></div>`).join('')}
+              </div>
+              <div class="species-row">${speciesChips}</div>
+            </div>
+            <details class="downloads">
+              <summary>Public links (${downloadLinks.length})</summary>
+              <div class="download-links">${downloadLinks.join('')}</div>
+            </details>
+          </article>`;
+      }
+
+      function renderDatasets() {
+        const datasets = filteredDatasets();
+        byId('datasetCount').textContent = `${datasets.length} of ${catalog.datasets.length} studies`;
+        byId('datasetGrid').innerHTML = datasets.length
+          ? datasets.map(renderDatasetCard).join('')
+          : '<div class="empty">No studies match the current filters.</div>';
+      }
+
+      function filteredFiles() {
+        return catalog.files.filter(file => {
+          if (fileState.project !== 'all' && file.accession.toLowerCase() !== fileState.project) return false;
+          if (fileState.format !== 'all' && file.format !== fileState.format) return false;
+          if (fileState.role !== 'all' && file.role !== fileState.role) return false;
+          const searchText = `${file.name} ${file.accession} ${file.role} ${file.speciesScope}`.toLowerCase();
+          if (fileState.search && !searchText.includes(fileState.search)) return false;
+          return true;
+        });
+      }
+
+      function renderFiles() {
+        currentFiles = filteredFiles();
+        byId('fileCount').textContent = `${currentFiles.length} of ${catalog.files.length} files`;
+        byId('fileRows').innerHTML = currentFiles.length ? currentFiles.map(file => `
+          <tr>
+            <td><strong>${escapeHtml(file.accession)}</strong></td>
+            <td class="file-name">${escapeHtml(file.name)}</td>
+            <td>${escapeHtml(file.format)}</td>
+            <td>${escapeHtml(roleLabels[file.role] || file.role)}</td>
+            <td>${escapeHtml(speciesScopeLabels[file.speciesScope] || file.speciesScope)}</td>
+            <td>${file.sizeMb == null ? '—' : `${escapeHtml(file.sizeMb)} MB`}</td>
+            <td class="actions">
+              <a class="text-button" href="${escapeHtml(file.url)}" target="_blank" rel="noopener noreferrer">Open</a>
+              <button class="text-button" type="button" data-copy-url="${escapeHtml(file.url)}">Copy</button>
+            </td>
+          </tr>`).join('') : '<tr><td colspan="7" style="padding:32px;text-align:center;color:#5d716a">No files match the current filters.</td></tr>';
+      }
+
+      function showToast(message) {
+        const toast = byId('toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        window.clearTimeout(showToast.timer);
+        showToast.timer = window.setTimeout(() => toast.classList.remove('show'), 1800);
+      }
+
+      function fallbackCopy(text) {
+        const input = document.createElement('textarea');
+        input.value = text;
+        input.setAttribute('readonly', '');
+        input.style.position = 'fixed';
+        input.style.opacity = '0';
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        input.remove();
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(() => showToast('FTP link copied')).catch(() => {
+            fallbackCopy(text);
+            showToast('FTP link copied');
+          });
+        } else {
+          fallbackCopy(text);
+          showToast('FTP link copied');
+        }
+      }
+
+      function downloadBlob(filename, content, type) {
+        const blob = new Blob([content], { type });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = filename;
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function cleanTsv(value) {
+        return String(value == null ? '' : value).replace(/[\t\r\n]+/g, ' ');
+      }
+
+      function exportTsv() {
+        const headers = ['accession', 'dataset_id', 'file_name', 'format', 'role', 'species_scope', 'size_mb', 'download_url'];
+        const rows = currentFiles.map(file => [file.accession, file.datasetId, file.name, file.format, file.role, file.speciesScope, file.sizeMb, file.url]);
+        const output = [headers, ...rows].map(row => row.map(cleanTsv).join('\t')).join('\n');
+        downloadBlob('liriodendron_massive_file_manifest.tsv', output, 'text/tab-separated-values;charset=utf-8');
+      }
+
+      function resetFileFilters() {
+        fileState.search = '';
+        fileState.project = 'all';
+        fileState.format = 'all';
+        fileState.role = 'all';
+        byId('fileSearch').value = '';
+        byId('projectFilter').value = 'all';
+        byId('formatFilter').value = 'all';
+        byId('roleFilter').value = 'all';
+        renderFiles();
+      }
+
+      function bindEvents() {
+        byId('datasetSearch').addEventListener('input', event => { datasetState.search = event.target.value.trim().toLowerCase(); renderDatasets(); });
+        byId('omicsFilter').addEventListener('change', event => { datasetState.omics = event.target.value; renderDatasets(); });
+        byId('speciesFilter').addEventListener('change', event => { datasetState.species = event.target.value; renderDatasets(); });
+        byId('availabilityFilter').addEventListener('change', event => { datasetState.availability = event.target.value; renderDatasets(); });
+        byId('fileSearch').addEventListener('input', event => { fileState.search = event.target.value.trim().toLowerCase(); renderFiles(); });
+        byId('projectFilter').addEventListener('change', event => { fileState.project = event.target.value; renderFiles(); });
+        byId('formatFilter').addEventListener('change', event => { fileState.format = event.target.value; renderFiles(); });
+        byId('roleFilter').addEventListener('change', event => { fileState.role = event.target.value; renderFiles(); });
+        byId('downloadTsv').addEventListener('click', exportTsv);
+        byId('downloadJson').addEventListener('click', () => downloadBlob('liriodendron_public_omics_catalog.json', JSON.stringify(catalog, null, 2), 'application/json;charset=utf-8'));
+        byId('resetFiles').addEventListener('click', resetFileFilters);
+
+        document.addEventListener('click', event => {
+          const copyButton = event.target.closest('[data-copy-url]');
+          if (copyButton) copyText(copyButton.getAttribute('data-copy-url'));
+
+          const browseButton = event.target.closest('[data-browse-dataset]');
+          if (browseButton) {
+            fileState.project = browseButton.getAttribute('data-browse-dataset');
+            byId('projectFilter').value = fileState.project;
+            renderFiles();
+            byId('file-browser').scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+      }
+
+      function applyUrlState() {
+        const params = new URLSearchParams(window.location.search);
+        const project = (params.get('dataset') || '').toLowerCase();
+        if (project && catalog.files.some(file => file.accession.toLowerCase() === project)) {
+          fileState.project = project;
+          byId('projectFilter').value = project;
+        }
+      }
+
+      renderStats();
+      populateFilters();
+      applyUrlState();
+      renderDatasets();
+      renderFiles();
+      bindEvents();
+      byId('curationNotes').innerHTML = catalog.notes.map(note => `<li>${escapeHtml(note)}</li>`).join('');
+      byId('catalogVersion').textContent = catalog.version;
+      byId('curationDate').textContent = catalog.curationDate;
+    })();
+  </script>
+</body>
+</html>
