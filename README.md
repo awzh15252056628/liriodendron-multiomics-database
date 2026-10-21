@@ -54,3 +54,8 @@
 ## 未包含的大文件
 
 为避免 GitHub 上传失败，超过约 24MB 的超大数据文件没有放进这个上传版。详见 `EXCLUDED_LARGE_FILES.tsv`。
+
+## User Manual
+
+- [Complete English user manual (PDF)](docs/Liriodendron_Multiomics_Database_Complete_User_Manual_EN.pdf)
+
